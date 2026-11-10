@@ -230,7 +230,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100vw; 
-	    height: 100dvh; /* Geändert (vorher 100vh) */
+        height: 100dvh; /* Geändert (vorher 100vh) */
             background-color: rgba(0, 0, 0, 0.85);
             display: none;
             justify-content: center;
@@ -1112,7 +1112,7 @@
         let explosions = [];
         let gibs = [];
         let floatingTexts = [];
-        let wave = 0;           
+        let wave = 0;            
         let coins = 150;        
         let killed = 0;          
         let portalStatus = 'ON'; 
@@ -1746,12 +1746,10 @@
             }
         }
 
-        canvas.addEventListener('mousedown', (e) => { if (gameOver) return; isDragging = true; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
-        canvas.addEventListener('mousemove', (e) => { if (!isDragging || gameOver) return; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
-        canvas.addEventListener('mouseup', (e) => { if (gameOver) return; if (isDragging) { const c = getGridCoordinates(e); tryPlaceTower(c.gridX, c.gridY); isDragging = false; dragGridX = -1; dragGridY = -1; } });
-        canvas.addEventListener('touchstart', (e) => { if (gameOver) return; isDragging = true; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; }, { passive: true });
-        canvas.addEventListener('touchmove', (e) => { if (!isDragging || gameOver) return; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; }, { passive: true });
-        canvas.addEventListener('touchend', (e) => { if (gameOver) return; if (isDragging) { if (dragGridX !== -1 && dragGridY !== -1) tryPlaceTower(dragGridX, dragGridY); isDragging = false; dragGridX = -1; dragGridY = -1; } }, { passive: true });
+        // --- POINTER EVENTS (ersetzt mousedown, mouseup, touchstart, touchmove, touchend) ---
+        canvas.addEventListener('pointerdown', (e) => { if (gameOver) return; isDragging = true; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
+        canvas.addEventListener('pointermove', (e) => { if (!isDragging || gameOver) return; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
+        canvas.addEventListener('pointerup', (e) => { if (gameOver) return; if (isDragging) { const c = getGridCoordinates(e); tryPlaceTower(c.gridX, c.gridY); isDragging = false; dragGridX = -1; dragGridY = -1; } });
 
         class Enemy {
             constructor(startX, startY, type) {
