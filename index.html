@@ -576,6 +576,14 @@
             <div id="authMsg" style="color: #ff5555; font-size: 11px; text-align: center; margin-top: 2px;"></div>
         </div>
 
+        <!-- PASSWORD RESET SECTION (Aktiv bei Recovery-Link) -->
+        <div id="resetPasswordSection" style="display: none; background-color: #111; border: 1px solid #ffcc00; padding: 15px; width: 100%; max-width: 320px; box-sizing: border-box; margin-bottom: 25px; flex-direction: column; gap: 10px;">
+            <div class="auth-title" style="color: #ffcc00;">NEUES PASSWORT EINGEBEN</div>
+            <input type="password" id="newPasswordInput" class="auth-input" placeholder="Neues Passwort">
+            <button id="saveNewPasswordBtn" class="btn" style="padding: 8px; font-size: 12px; background-color: #2E6930; border-color: #4CAF50;">PASSWORT SPEICHERN</button>
+            <div id="resetMsg" style="color: #ff5555; font-size: 11px; text-align: center; margin-top: 2px;"></div>
+        </div>
+
         <!-- USER STATUS ROW (Wird angezeigt, wenn eingeloggt) -->
         <div id="userStatusRow">
             <span id="loggedInUsername" style="color: #00ff00; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"></span>
@@ -807,6 +815,11 @@
         const logoutBtn = document.getElementById('logoutBtn');
         const authMsg = document.getElementById('authMsg');
 
+        const resetPasswordSection = document.getElementById('resetPasswordSection');
+        const newPasswordInput = document.getElementById('newPasswordInput');
+        const saveNewPasswordBtn = document.getElementById('saveNewPasswordBtn');
+        const resetMsg = document.getElementById('resetMsg');
+
         async function fetchUserProfile(userId) {
             const { data, error } = await supabaseClient
                 .from('profiles')
@@ -821,17 +834,59 @@
 
         async function checkInitialAuth() {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session && session.user) {
+            if (session && session.user && resetPasswordSection.style.display !== 'flex') {
                 const uname = await fetchUserProfile(session.user.id);
                 setLoggedInState(session.user, uname);
             }
         }
         checkInitialAuth();
 
+        // Supabase-Event abfangen für Recovery-Link aus der E-Mail
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'PASSWORD_RECOVERY') {
+                authSection.style.display = 'none';
+                userStatusRow.style.display = 'none';
+                resetPasswordSection.style.display = 'flex';
+            }
+        });
+
+        // Neues Passwort speichern
+        saveNewPasswordBtn.addEventListener('click', async () => {
+            soundFX.click();
+            resetMsg.innerText = '';
+            resetMsg.style.color = '#ff5555';
+            const newPassword = newPasswordInput.value;
+            
+            if (!newPassword || newPassword.length < 6) {
+                resetMsg.innerText = 'Passwort muss mind. 6 Zeichen lang sein.';
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+
+            if (error) {
+                resetMsg.innerText = error.message;
+            } else {
+                resetMsg.style.color = '#00ff00';
+                resetMsg.innerText = 'Passwort erfolgreich geändert!';
+                setTimeout(async () => {
+                    resetPasswordSection.style.display = 'none';
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (session && session.user) {
+                        const uname = await fetchUserProfile(session.user.id);
+                        setLoggedInState(session.user, uname);
+                    } else {
+                        setLoggedOutState();
+                    }
+                }, 1500);
+            }
+        });
+
         function setLoggedInState(user, username) {
             currentUser = user;
             currentUsername = username;
             authSection.style.display = 'none';
+            resetPasswordSection.style.display = 'none';
             userStatusRow.style.display = 'flex';
             loggedInUsername.innerText = `👤 ${username}`;
         }
@@ -840,6 +895,7 @@
             currentUser = null;
             currentUsername = 'Anonymous';
             authSection.style.display = 'flex';
+            resetPasswordSection.style.display = 'none';
             userStatusRow.style.display = 'none';
             authUsernameInput.value = '';
             authEmailInput.value = '';
@@ -2003,7 +2059,7 @@
                     ctx.fillStyle = '#dcdcdc'; ctx.fillRect(-6, -6, 12, 14);
                     ctx.shadowColor = 'transparent';
                     ctx.fillStyle = '#e0e0e0'; ctx.fillRect(-8, -18, 16, 12);
-                    ctx.fillStyle = '#000000'; ctx.fillRect(-5, -14, 3, 3); ctx.fillStyle = '#000000'; ctx.fillRect(2, -14, 3, 3);
+                    ctx.fillStyle = '#000000'; ctx.fillRect(-5, -14, 3, 3); ctx.fillStyle = '#000000'; ctx.fillRect(17, -14, 3, 3);
                     ctx.fillStyle = '#a9a9a9'; ctx.fillRect(-4, 8, 8, 8);
                 } else if (this.type === 'creeper') {
                     ctx.fillStyle = '#2e7d32'; ctx.fillRect(-10, -8, 20, 16);
