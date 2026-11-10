@@ -572,6 +572,7 @@
                 <button id="loginBtn" class="btn auth-btn">LOGIN</button>
                 <button id="registerBtn" class="btn auth-btn" style="background-color: #222; border-color: #555;">REGISTRIEREN</button>
             </div>
+            <button id="forgotPasswordBtn" class="btn" style="width: 100%; padding: 6px; font-size: 11px; background-color: transparent; border: 1px dashed #444; color: #888; margin-top: 2px;">Forgot Password?</button>
             <div id="authMsg" style="color: #ff5555; font-size: 11px; text-align: center; margin-top: 2px;"></div>
         </div>
 
@@ -802,6 +803,7 @@
         const authPasswordInput = document.getElementById('authPassword');
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
+        const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
         const logoutBtn = document.getElementById('logoutBtn');
         const authMsg = document.getElementById('authMsg');
 
@@ -889,6 +891,29 @@
             } else {
                 authMsg.style.color = '#00ff00';
                 authMsg.innerText = 'Registrierung erfolgreich! Bitte E-Mail bestätigen.';
+            }
+        });
+
+        forgotPasswordBtn.addEventListener('click', async () => {
+            soundFX.click();
+            authMsg.style.color = '#ff5555';
+            authMsg.innerText = '';
+            
+            const email = authEmailInput.value.trim();
+            if (!email) {
+                authMsg.innerText = 'Bitte gib oben deine E-Mail-Adresse ein.';
+                return;
+            }
+
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.origin,
+            });
+
+            if (error) {
+                authMsg.innerText = error.message;
+            } else {
+                authMsg.style.color = '#00ff00';
+                authMsg.innerText = 'Reset-Link wurde per E-Mail gesendet!';
             }
         });
 
