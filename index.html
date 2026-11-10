@@ -20,9 +20,8 @@
             font-family: monospace;
             color: #aaaaaa;
             width: 100vw;       
-            height: 100dvh;     
-            overflow: hidden;   
-            position: fixed;    
+            min-height: 100dvh;     
+            overflow-x: hidden;   
             user-select: none;
             -webkit-user-select: none;
         }
@@ -34,10 +33,9 @@
             align-items: center;
             width: 100vw;
             min-height: 100dvh; 
-            padding: 40px 20px 20px 20px;
+            padding: 40px 20px 40px 20px;
             box-sizing: border-box;
             background-color: #0a0a0a;
-            overflow-y: auto;
         }
 
         .header-section {
@@ -355,10 +353,14 @@
             justify-content: space-between; 
             width: 100vw;
             height: 100dvh;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #0a0a0a;
             box-sizing: border-box;
             padding: 5px 0;
             overflow: hidden;
+            z-index: 10;
         }
 
         canvas { 
@@ -1280,8 +1282,8 @@
         let gibs = [];
         let floatingTexts = [];
         let wave = 0;          
-        let coins = 150;        
-        let killed = 0;         
+        let coins = 150;       
+        let killed = 0;        
         let portalStatus = 'ON'; 
         let gameOver = false;
         let enemiesToSpawn = 0;
@@ -1292,8 +1294,8 @@
         let bossWarningTimer = 0;
         let bossesRemainingToSpawn = 0;
 
-        let selectedTower = null;        
-        let isDragging = false;          
+        let selectedTower = null;         
+        let isDragging = false;           
         let dragGridX = -1;
         let dragGridY = -1;
 
