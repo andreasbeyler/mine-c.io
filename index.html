@@ -849,6 +849,7 @@
 
         registerBtn.addEventListener('click', async () => {
             soundFX.click();
+            authMsg.style.color = '#ff5555'; // Zurück auf rot für Fehler
             authMsg.innerText = '';
             const username = authUsernameInput.value.trim();
             const email = authEmailInput.value.trim();
@@ -867,14 +868,26 @@
             });
 
             if (error) {
-                authMsg.innerText = error.message;
+                // Prüfen, ob die E-Mail bereits existiert
+                if (error.message.includes('already registered') || error.status === 422) {
+                    authMsg.innerText = 'Ein Account mit dieser E-Mail-Adresse existiert bereits.';
+                } else {
+                    authMsg.innerText = error.message;
+                }
             } else if (data.user) {
                 // 2. Benutzername zusätzlich in der 'profiles'-Tabelle speichern
-                await supabaseClient.from('profiles').upsert({
+                const { error: profileError } = await supabaseClient.from('profiles').upsert({
                     id: data.user.id,
                     username: username,
                     updated_at: new Date()
                 });
+
+                if (profileError) {
+                    if (profileError.message.includes('already exists') || profileError.code === '23505') {
+                        authMsg.innerText = 'Dieser Benutzername ist bereits vergeben.';
+                        return;
+                    }
+                }
 
                 authMsg.style.color = '#00ff00';
                 authMsg.innerText = 'Registrierung erfolgreich! Bitte E-Mail bestätigen.';
