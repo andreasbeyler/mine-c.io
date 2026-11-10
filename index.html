@@ -333,6 +333,7 @@
             padding: 5px;
             gap: 4px;
             z-index: 50;
+            position: relative; /* <-- NEU: Macht die Leiste zum Ankerpunkt für das Upgrade-Menü */
         }
 
         .footer-row {
@@ -424,6 +425,10 @@
             font-size: 11px;
             gap: 6px;
             height: 42px;
+            position: absolute; /* <-- NEU: Löst das Menü aus dem regulären Layoutfluss */
+            bottom: 100%;       /* <-- NEU: Positioniert das Menü passgenau über der unteren Leiste */
+            left: 0;            /* <-- NEU */
+            z-index: 60;        /* <-- NEU: Garantiert, dass es sichtbar über dem grünen Spielfeld liegt */
         }
         #upgradeInfo {
             color: #ffffff;
