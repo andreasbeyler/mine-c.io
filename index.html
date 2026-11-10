@@ -582,12 +582,24 @@
         <button id="playBtn">PLAY</button>
 
         <div id="newScoreSection">
-            <div class="section-title" style="color: #ffcc00; border-color: #ffcc00; width: 100%; text-align: center;">NEW SCORE</div>
+            <div class="section-title" style="color: #ffcc00; border-color: #ffcc00; width: 100%; text-align: center;">GAME OVER STATS</div>
             <div class="score-result-text">Killed: <span id="nsKilled">0</span> | Wave: <span id="nsWave">0</span></div>
-            <input type="text" id="startNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off">
-            <div class="score-btns">
-                <button id="saveScoreBtn" class="btn">SAVE</button>
-                <button id="skipScoreBtn" class="btn">SKIP</button>
+            
+            <!-- Nur für eingeloggte Nutzer sichtbar -->
+            <div id="loggedInScoreContainer" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+                <input type="text" id="startNameInput" placeholder="ENTER YOUR NAME" maxlength="15" autocomplete="off" disabled style="display: none;">
+                <div class="score-btns">
+                    <button id="saveScoreBtn" class="btn">SAVE SCORE</button>
+                    <button id="skipScoreBtn" class="btn">CLOSE</button>
+                </div>
+            </div>
+
+            <!-- Nur für Gäste sichtbar -->
+            <div id="guestScoreContainer" style="width: 100%; text-align: center; display: none;">
+                <div style="color: #aaaaaa; font-size: 12px; line-height: 1.4; margin-bottom: 15px; padding: 0 5px;">
+                    Only registered users can submit scores to the leaderboard. Log in before playing to track your highscores!
+                </div>
+                <button id="guestCloseBtn" class="btn" style="width: 100%; padding: 10px; font-size: 14px; background-color: #333; color: white; border-color: #555;">CLOSE</button>
             </div>
         </div>
 
@@ -1084,8 +1096,6 @@
             }
         };
 
-        const fallbackPlayerId = 'player_' + Math.random().toString(36).substr(2, 9);
-
         const startScreen = document.getElementById('startScreen');
         const gameWrapper = document.getElementById('gameWrapper');
         const playBtn = document.getElementById('playBtn');
@@ -1093,7 +1103,9 @@
         const newScoreSection = document.getElementById('newScoreSection');
         const saveScoreBtn = document.getElementById('saveScoreBtn');
         const skipScoreBtn = document.getElementById('skipScoreBtn');
-        const startNameInput = document.getElementById('startNameInput');
+        const guestCloseBtn = document.getElementById('guestCloseBtn');
+        const loggedInScoreContainer = document.getElementById('loggedInScoreContainer');
+        const guestScoreContainer = document.getElementById('guestScoreContainer');
 
         const gameOverOverlay = document.getElementById('gameOverOverlay');
         const retryBtn = document.getElementById('retryBtn');
@@ -1156,17 +1168,14 @@
         fetchLeaderboard();
 
         async function handleSaveScore() {
+            if (!currentUser) return;
             soundFX.click();
-            let nameStr = startNameInput.value.trim();
-            if (nameStr === '') nameStr = currentUser ? currentUsername : "Anonymous";
             
-            const playerId = currentUser ? currentUser.id : fallbackPlayerId;
-
             await supabaseClient
                 .from('leaderboard')
                 .upsert({
-                    id: playerId,
-                    name: nameStr,
+                    id: currentUser.id,
+                    name: currentUsername,
                     wave: pendingWave,
                     score: pendingScore,
                     updated_at: new Date()
@@ -1201,9 +1210,14 @@
             document.getElementById('nsKilled').innerText = pendingScore;
             document.getElementById('nsWave').innerText = pendingWave;
             
-            // Setze automatisch den eingeloggten Usernamen als Standard ins Highscore-Feld
-            startNameInput.value = currentUser ? currentUsername : '';
-            startNameInput.focus();
+            // Ansicht je nach Login-Status umschalten
+            if (currentUser) {
+                loggedInScoreContainer.style.display = 'flex';
+                guestScoreContainer.style.display = 'none';
+            } else {
+                loggedInScoreContainer.style.display = 'none';
+                guestScoreContainer.style.display = 'block';
+            }
 
             resetGame();
         });
@@ -1214,10 +1228,10 @@
         }
 
         saveScoreBtn.addEventListener('click', handleSaveScore);
-        startNameInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') { e.preventDefault(); handleSaveScore(); }
-        });
         skipScoreBtn.addEventListener('click', () => {
+            soundFX.click(); closeScoreSection();
+        });
+        guestCloseBtn.addEventListener('click', () => {
             soundFX.click(); closeScoreSection();
         });
 
@@ -1265,9 +1279,9 @@
         let explosions = [];
         let gibs = [];
         let floatingTexts = [];
-        let wave = 0;            
+        let wave = 0;          
         let coins = 150;        
-        let killed = 0;          
+        let killed = 0;         
         let portalStatus = 'ON'; 
         let gameOver = false;
         let enemiesToSpawn = 0;
