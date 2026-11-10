@@ -19,10 +19,10 @@
             background-color: #0a0a0a; 
             font-family: monospace;
             color: #aaaaaa;
-            width: 100vw;       /* Neu */
-            height: 100dvh;     /* Neu */
-            overflow: hidden;   /* Geändert (vorher overflow-x: hidden) */
-            position: fixed;    /* Neu */
+            width: 100vw;       
+            height: 100dvh;     
+            overflow: hidden;   
+            position: fixed;    
             user-select: none;
             -webkit-user-select: none;
         }
@@ -33,7 +33,7 @@
             flex-direction: column;
             align-items: center;
             width: 100vw;
-            min-height: 100dvh; /* Geändert (vorher 100vh) */
+            min-height: 100dvh; 
             padding: 40px 20px 20px 20px;
             box-sizing: border-box;
             background-color: #0a0a0a;
@@ -86,6 +86,60 @@
         .game-subtitle {
             color: #888888;
             font-size: 14px;
+        }
+
+        /* Login Box Styles */
+        #authSection {
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 15px;
+            width: 100%;
+            max-width: 320px;
+            box-sizing: border-box;
+            margin-bottom: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .auth-title {
+            color: #fff;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .auth-input {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            border: 1px solid #444;
+            padding: 8px;
+            font-family: monospace;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+        }
+        .auth-input:focus { border-color: #00ff00; }
+        .auth-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .auth-btn {
+            flex: 1;
+            padding: 8px;
+            font-size: 12px;
+        }
+        #userStatusRow {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 320px;
+            background-color: #111;
+            border: 1px solid #333;
+            padding: 10px 15px;
+            box-sizing: border-box;
+            margin-bottom: 25px;
+            font-size: 13px;
         }
 
         #playBtn {
@@ -197,7 +251,7 @@
         .threat-desc { color: #777777; font-size: 12px; line-height: 1.4; }
         .threat-stats { color: #555555; font-size: 11px; margin-top: 4px; font-weight: bold; }
 
-        /* Footer Links im Startmenü (Impressum, Datenschutz & Twitch) */
+        /* Footer Links */
         .footer-links {
             margin-top: auto;
             padding-top: 20px;
@@ -230,7 +284,7 @@
             position: fixed;
             top: 0; left: 0;
             width: 100vw; 
-        height: 100dvh; /* Geändert (vorher 100vh) */
+            height: 100dvh; 
             background-color: rgba(0, 0, 0, 0.85);
             display: none;
             justify-content: center;
@@ -298,7 +352,7 @@
             display: none; 
             flex-direction: column;
             align-items: center;
-            justify-content: space-between; /* Geändert: Pinnt Menüs fest nach ganz oben und unten */
+            justify-content: space-between; 
             width: 100vw;
             height: 100dvh;
             position: relative;
@@ -308,9 +362,9 @@
         }
 
         canvas { 
-            width: 100%; /* Geändert: Passt sich der Breite flexibel an */
+            width: 100%; 
             max-width: 480px; 
-            max-height: calc(100dvh - 135px); /* Neu: Reserviert immer ca. 135px Platz für Top- und Bottom-Menü */
+            max-height: calc(100dvh - 135px); 
             height: auto;
             aspect-ratio: 480 / 800;
             background-color: #111;
@@ -333,7 +387,7 @@
             padding: 5px;
             gap: 4px;
             z-index: 50;
-            position: relative; /* <-- NEU: Macht die Leiste zum Ankerpunkt für das Upgrade-Menü */
+            position: relative; 
         }
 
         .footer-row {
@@ -425,10 +479,10 @@
             font-size: 11px;
             gap: 6px;
             height: 42px;
-            position: absolute; /* <-- NEU: Löst das Menü aus dem regulären Layoutfluss */
-            bottom: 100%;       /* <-- NEU: Positioniert das Menü passgenau über der unteren Leiste */
-            left: 0;            /* <-- NEU */
-            z-index: 60;        /* <-- NEU: Garantiert, dass es sichtbar über dem grünen Spielfeld liegt */
+            position: absolute; 
+            bottom: 100px;       
+            left: 0;            
+            z-index: 60;        
         }
         #upgradeInfo {
             color: #ffffff;
@@ -473,7 +527,7 @@
         #gameOverOverlay {
             position: absolute; top: 0; left: 0;
             width: 100vw; 
-            height: 100dvh; /* Geändert (vorher 100vh) */
+            height: 100dvh; 
             background-color: rgba(0, 0, 0, 0.85);
             display: none; 
             flex-direction: column;
@@ -504,6 +558,25 @@
             <div class="presents">PAULGHG0306 PRESENTS</div>
             <h1 class="game-title">Mine-c.io</h1>
             <div class="game-subtitle">Defend the legendary Portal.</div>
+        </div>
+
+        <!-- AUTH / LOGIN SECTION -->
+        <div id="authSection">
+            <div class="auth-title">ACCOUNT LOGIN / REGISTER</div>
+            <input type="text" id="authUsername" class="auth-input" placeholder="Benutzername (nur bei Reg.)" autocomplete="username">
+            <input type="email" id="authEmail" class="auth-input" placeholder="E-Mail" autocomplete="email">
+            <input type="password" id="authPassword" class="auth-input" placeholder="Passwort" autocomplete="current-password">
+            <div class="auth-btns">
+                <button id="loginBtn" class="btn auth-btn">LOGIN</button>
+                <button id="registerBtn" class="btn auth-btn" style="background-color: #222; border-color: #555;">REGISTRIEREN</button>
+            </div>
+            <div id="authMsg" style="color: #ff5555; font-size: 11px; text-align: center; margin-top: 2px;"></div>
+        </div>
+
+        <!-- USER STATUS ROW (Wird angezeigt, wenn eingeloggt) -->
+        <div id="userStatusRow">
+            <span id="loggedInUsername" style="color: #00ff00; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;"></span>
+            <button id="logoutBtn" class="btn" style="padding: 4px 8px; font-size: 11px; background-color: #880000; border-color: #ff0000;">LOGOUT</button>
         </div>
 
         <button id="playBtn">PLAY</button>
@@ -590,7 +663,7 @@
             </div>
         </div>
 
-        <!-- Footer Links (Impressum, Datenschutz, Twitch) -->
+        <!-- Footer Links -->
         <div class="footer-links">
             <a href="https://lnk.bio/PaulGHG0306" target="_blank" rel="noopener noreferrer">Impressum</a>
             <span>•</span>
@@ -624,7 +697,7 @@
 
                 <h3>Bei jedem Aufruf</h3>
                 <p>Der Server protokolliert jeden Aufruf: Zeitpunkt, IP-Adresse, aufgerufene Adresse (Name, Pfad, Parameter), Methode, Browserkennung (User-Agent) und die übrigen Kopfzeilen, die Ihr Browser mitschickt (etwa Sprache oder Herkunftsseite), sowie den Antwortstatus. Aus der IP-Adresse werden mit einer lokalen Datenbank der Netzbetreiber und das Land seiner Registrierung ermittelt; dabei wird niemand Drittes gefragt.</p>
-                <p>Zweck: Sicherheit des Servers, Erkennen und Auswerten von Angriffen, Schutz vor Missbrauch. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt in der Sicherheit des Angebots und der Abwehr von Angriffen. Speicherdauer: 30 Tage, danach automatisch gelöscht.</p>
+                <p>Zweck: Sicherheit des Servers, Erkennen und Auswerten von Angriffe, Schutz vor Missbrauch. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt in der Sicherheit des Angebots und der Abwehr von Angriffen. Speicherdauer: 30 Tage, danach automatisch gelöscht.</p>
 
                 <h3>Das Spiel</h3>
                 <p><strong>Statistik:</strong> Zu jeder Partie meldet das Spiel: eine zufällige Kennung der Partie, den Zeitpunkt, die erreichte Welle, die Zahl der abgewehrten Gegner, die Spieldauer und wie die Partie endete; der Server ergänzt Ihre IP-Adresse. Öffentlich sind nur Summen und Verteilungen. Die IP-Adresse wird nach 30 Tagen entfernt, die übrigen Angaben bleiben für die Statistik. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Betrieb und Weiterentwicklung des Spiels, Schutz vor Missbrauch).</p>
@@ -699,19 +772,121 @@
         const openPrivacyBtn = document.getElementById('openPrivacyBtn');
         const closePrivacyBtn = document.getElementById('closePrivacyBtn');
 
-        openPrivacyBtn.addEventListener('click', () => {
-            privacyModal.style.display = 'flex';
-        });
+        openPrivacyBtn.addEventListener('click', () => { privacyModal.style.display = 'flex'; });
+        closePrivacyBtn.addEventListener('click', () => { privacyModal.style.display = 'none'; });
+        window.addEventListener('click', (e) => { if (e.target === privacyModal) privacyModal.style.display = 'none'; });
 
-        closePrivacyBtn.addEventListener('click', () => {
-            privacyModal.style.display = 'none';
-        });
+        // --- Supabase Auth & Profil Steuerung ---
+        let currentUser = null;
+        let currentUsername = 'Anonymous';
 
-        window.addEventListener('click', (e) => {
-            if (e.target === privacyModal) {
-                privacyModal.style.display = 'none';
+        const authSection = document.getElementById('authSection');
+        const userStatusRow = document.getElementById('userStatusRow');
+        const loggedInUsername = document.getElementById('loggedInUsername');
+        const authUsernameInput = document.getElementById('authUsername');
+        const authEmailInput = document.getElementById('authEmail');
+        const authPasswordInput = document.getElementById('authPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const authMsg = document.getElementById('authMsg');
+
+        async function fetchUserProfile(userId) {
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('username')
+                .eq('id', userId)
+                .single();
+            if (!error && data) {
+                return data.username;
+            }
+            return 'Player';
+        }
+
+        async function checkInitialAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                const uname = await fetchUserProfile(session.user.id);
+                setLoggedInState(session.user, uname);
+            }
+        }
+        checkInitialAuth();
+
+        function setLoggedInState(user, username) {
+            currentUser = user;
+            currentUsername = username;
+            authSection.style.display = 'none';
+            userStatusRow.style.display = 'flex';
+            loggedInUsername.innerText = `👤 ${username}`;
+        }
+
+        function setLoggedOutState() {
+            currentUser = null;
+            currentUsername = 'Anonymous';
+            authSection.style.display = 'flex';
+            userStatusRow.style.display = 'none';
+            authUsernameInput.value = '';
+            authEmailInput.value = '';
+            authPasswordInput.value = '';
+            authMsg.innerText = '';
+        }
+
+        loginBtn.addEventListener('click', async () => {
+            soundFX.click();
+            authMsg.innerText = '';
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+            if (!email || !password) { authMsg.innerText = 'Bitte E-Mail und Passwort eingeben.'; return; }
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) {
+                authMsg.innerText = error.message;
+            } else if (data.session) {
+                const uname = await fetchUserProfile(data.session.user.id);
+                setLoggedInState(data.session.user, uname);
             }
         });
+
+        registerBtn.addEventListener('click', async () => {
+            soundFX.click();
+            authMsg.innerText = '';
+            const username = authUsernameInput.value.trim();
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+            
+            if (!username || !email || !password) { authMsg.innerText = 'Bitte Benutzername, E-Mail und Passwort eingeben.'; return; }
+            if (username.length < 3) { authMsg.innerText = 'Benutzername muss mind. 3 Zeichen lang sein.'; return; }
+
+            // 1. Registrieren bei Supabase Auth
+            const { data, error } = await supabaseClient.auth.signUp({ 
+                email, 
+                password,
+                options: {
+                    data: { username: username }
+                }
+            });
+
+            if (error) {
+                authMsg.innerText = error.message;
+            } else if (data.user) {
+                // 2. Benutzername zusätzlich in der 'profiles'-Tabelle speichern
+                await supabaseClient.from('profiles').upsert({
+                    id: data.user.id,
+                    username: username,
+                    updated_at: new Date()
+                });
+
+                authMsg.style.color = '#00ff00';
+                authMsg.innerText = 'Registrierung erfolgreich! Bitte E-Mail bestätigen.';
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            soundFX.click();
+            await supabaseClient.auth.signOut();
+            setLoggedOutState();
+        });
+
 
         function setupIconCanvas(id, logicalSize) {
             const canvas = document.getElementById(id);
@@ -912,7 +1087,7 @@
             }
         };
 
-        const myPlayerId = 'player_' + Math.random().toString(36).substr(2, 9);
+        const fallbackPlayerId = 'player_' + Math.random().toString(36).substr(2, 9);
 
         const startScreen = document.getElementById('startScreen');
         const gameWrapper = document.getElementById('gameWrapper');
@@ -947,7 +1122,6 @@
         let pendingWave = 0;
         let soundEnabled = true;
 
-        // 1. Bestenliste direkt von Supabase laden
         async function fetchLeaderboard() {
             const { data, error } = await supabaseClient
                 .from('leaderboard')
@@ -982,46 +1156,26 @@
             }
         }
 
-        // Beim Start einmalig die Bestenliste aus der Cloud laden
         fetchLeaderboard();
 
-        // 2. Highscore beim Beenden eines Spiels in Supabase speichern
         async function handleSaveScore() {
             soundFX.click();
             let nameStr = startNameInput.value.trim();
-            if (nameStr === '') nameStr = "Anonymous";
+            if (nameStr === '') nameStr = currentUser ? currentUsername : "Anonymous";
             
-            const { data: existing } = await supabaseClient
+            const playerId = currentUser ? currentUser.id : fallbackPlayerId;
+
+            await supabaseClient
                 .from('leaderboard')
-                .select('*')
-                .eq('id', myPlayerId)
-                .single();
-
-            let saveToCloud = true;
-            if (existing) {
-                let isBetter = false;
-                if (pendingScore > existing.score) isBetter = true;
-                else if (pendingScore === existing.score && pendingWave > existing.wave) isBetter = true;
-                
-                if (!isBetter && nameStr === existing.name) {
-                    saveToCloud = false;
-                }
-            }
-
-            if (saveToCloud) {
-                await supabaseClient
-                    .from('leaderboard')
-                    .upsert({
-                        id: myPlayerId,
-                        name: nameStr,
-                        wave: pendingWave,
-                        score: pendingScore,
-                        updated_at: new Date()
-                    });
-                
-                await fetchLeaderboard();
-            }
+                .upsert({
+                    id: playerId,
+                    name: nameStr,
+                    wave: pendingWave,
+                    score: pendingScore,
+                    updated_at: new Date()
+                });
             
+            await fetchLeaderboard();
             closeScoreSection();
         }
 
@@ -1049,7 +1203,9 @@
             
             document.getElementById('nsKilled').innerText = pendingScore;
             document.getElementById('nsWave').innerText = pendingWave;
-            startNameInput.value = '';
+            
+            // Setze automatisch den eingeloggten Usernamen als Standard ins Highscore-Feld
+            startNameInput.value = currentUser ? currentUsername : '';
             startNameInput.focus();
 
             resetGame();
@@ -1746,7 +1902,6 @@
             }
         }
 
-        // --- POINTER EVENTS (ersetzt mousedown, mouseup, touchstart, touchmove, touchend) ---
         canvas.addEventListener('pointerdown', (e) => { if (gameOver) return; isDragging = true; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
         canvas.addEventListener('pointermove', (e) => { if (!isDragging || gameOver) return; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
         canvas.addEventListener('pointerup', (e) => { if (gameOver) return; if (isDragging) { const c = getGridCoordinates(e); tryPlaceTower(c.gridX, c.gridY); isDragging = false; dragGridX = -1; dragGridY = -1; } });
