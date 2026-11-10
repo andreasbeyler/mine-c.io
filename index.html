@@ -298,9 +298,9 @@
             display: none; 
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between; /* Geändert: Pinnt Menüs fest nach ganz oben und unten */
             width: 100vw;
-            height: 100dvh; /* Geändert (vorher 100vh) */
+            height: 100dvh;
             position: relative;
             box-sizing: border-box;
             padding: 5px 0;
@@ -308,8 +308,9 @@
         }
 
         canvas { 
-            width: 480px;
-            max-width: 100vw; 
+            width: 100%; /* Geändert: Passt sich der Breite flexibel an */
+            max-width: 480px; 
+            max-height: calc(100dvh - 135px); /* Neu: Reserviert immer ca. 135px Platz für Top- und Bottom-Menü */
             height: auto;
             aspect-ratio: 480 / 800;
             background-color: #111;
