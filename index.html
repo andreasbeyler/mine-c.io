@@ -849,7 +849,7 @@
 
         registerBtn.addEventListener('click', async () => {
             soundFX.click();
-            authMsg.style.color = '#ff5555'; // Zurück auf rot für Fehler
+            authMsg.style.color = '#ff5555';
             authMsg.innerText = '';
             const username = authUsernameInput.value.trim();
             const email = authEmailInput.value.trim();
@@ -858,7 +858,6 @@
             if (!username || !email || !password) { authMsg.innerText = 'Bitte Benutzername, E-Mail und Passwort eingeben.'; return; }
             if (username.length < 3) { authMsg.innerText = 'Benutzername muss mind. 3 Zeichen lang sein.'; return; }
 
-            // 1. Registrieren bei Supabase Auth
             const { data, error } = await supabaseClient.auth.signUp({ 
                 email, 
                 password,
@@ -868,27 +867,12 @@
             });
 
             if (error) {
-                // Prüfen, ob die E-Mail bereits existiert
                 if (error.message.includes('already registered') || error.status === 422) {
                     authMsg.innerText = 'Ein Account mit dieser E-Mail-Adresse existiert bereits.';
                 } else {
                     authMsg.innerText = error.message;
                 }
-            } else if (data.user) {
-                // 2. Benutzername zusätzlich in der 'profiles'-Tabelle speichern
-                const { error: profileError } = await supabaseClient.from('profiles').upsert({
-                    id: data.user.id,
-                    username: username,
-                    updated_at: new Date()
-                });
-
-                if (profileError) {
-                    if (profileError.message.includes('already exists') || profileError.code === '23505') {
-                        authMsg.innerText = 'Dieser Benutzername ist bereits vergeben.';
-                        return;
-                    }
-                }
-
+            } else {
                 authMsg.style.color = '#00ff00';
                 authMsg.innerText = 'Registrierung erfolgreich! Bitte E-Mail bestätigen.';
             }
