@@ -1030,10 +1030,30 @@
             ctxZ.fillStyle = '#424242'; ctxZ.fillRect(10, 28, 4, 2); ctxZ.fillRect(18, 28, 4, 2);
 
             const ctxP = setupIconCanvas('iconPig', 32);
-            ctxP.fillStyle = '#f48fb1'; ctxP.fillRect(6, 10, 20, 14);
-            ctxP.fillStyle = '#ec407a'; ctxP.fillRect(18, 11, 8, 10);
-            ctxP.fillStyle = '#fce4ec'; ctxP.fillRect(23, 14, 3, 4);
-            ctxP.fillStyle = '#c2185b'; ctxP.fillRect(16, 7, 4, 4);
+            // Hintere Beine (Dunkelpink für räumliche Tiefe)
+            ctxP.fillStyle = '#D81B60'; 
+            ctxP.fillRect(10, 22, 3, 4); 
+            ctxP.fillRect(20, 22, 3, 4);
+            // Körper
+            ctxP.fillStyle = '#F48FB1'; 
+            ctxP.fillRect(6, 12, 16, 10);
+            // Vordere Beine (Normales Pink)
+            ctxP.fillStyle = '#F06292'; 
+            ctxP.fillRect(7, 22, 3, 5); 
+            ctxP.fillRect(17, 22, 3, 5);
+            // Kopf
+            ctxP.fillStyle = '#F48FB1'; 
+            ctxP.fillRect(20, 10, 8, 8);
+            // Schnauze und Nasenloch
+            ctxP.fillStyle = '#E91E63'; 
+            ctxP.fillRect(28, 13, 2, 4);
+            ctxP.fillStyle = '#C2185B'; 
+            ctxP.fillRect(29, 14, 1, 2);
+            // Auge (Weiß und schwarze Pupille)
+            ctxP.fillStyle = '#111111'; 
+            ctxP.fillRect(24, 12, 2, 2);
+            ctxP.fillStyle = '#FFFFFF'; 
+            ctxP.fillRect(23, 12, 1, 2);
 
             const ctxSkel = setupIconCanvas('iconSkeleton', 32);
             // Schädel
@@ -2179,11 +2199,38 @@
                 const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.5); // Jetzt 50%
 
                 if (this.type === 'pig') {
-                    ctx.fillStyle = '#f48fb1'; ctx.fillRect(-10, -8, 20, 16);
                     ctx.shadowColor = 'transparent';
-                    ctx.fillStyle = '#ec407a'; ctx.fillRect(4, -6, 8, 12);
-                    ctx.fillStyle = '#fce4ec'; ctx.fillRect(10, -2, 4, 4);
-                    ctx.fillStyle = '#c2185b'; ctx.fillRect(2, -10, 4, 4); ctx.fillRect(2, 6, 4, 4);
+                    
+                    // Hintere Beine (Dunkelpink, gibt 3D-Tiefe)
+                    ctx.fillStyle = '#D81B60'; 
+                    ctx.fillRect(-6, 6, 3, 4); 
+                    ctx.fillRect(4, 6, 3, 4);
+                    
+                    // Körper
+                    ctx.fillStyle = '#F48FB1'; 
+                    ctx.fillRect(-10, -4, 16, 10);
+                    
+                    // Vordere Beine (Helleres Pink)
+                    ctx.fillStyle = '#F06292'; 
+                    ctx.fillRect(-10, 6, 3, 5); 
+                    ctx.fillRect(1, 6, 3, 5);
+                    
+                    // Kopf
+                    ctx.fillStyle = '#F48FB1'; 
+                    ctx.fillRect(4, -6, 8, 8);
+                    
+                    // Schnauze (Hebt sich farblich ab)
+                    ctx.fillStyle = '#E91E63'; 
+                    ctx.fillRect(12, -3, 3, 4);
+                    // Nasenloch
+                    ctx.fillStyle = '#C2185B'; 
+                    ctx.fillRect(13, -2, 2, 2); 
+                    
+                    // Auge
+                    ctx.fillStyle = '#111111'; 
+                    ctx.fillRect(8, -4, 2, 2); // Pupille
+                    ctx.fillStyle = '#FFFFFF'; 
+                    ctx.fillRect(7, -4, 1, 2); // Weiß
                 } else if (this.type === 'skeleton') {
                     // Schädel
                     ctx.fillStyle = '#e0e0e0'; ctx.fillRect(-7, -18, 14, 12);
