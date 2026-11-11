@@ -765,7 +765,7 @@
                 </button>
                 <button id="selectLaserBtn" class="btn square-btn">
                     <canvas class="tower-icon-canvas" id="btnIconLaser" width="20" height="20"></canvas>
-                    Laser $90
+                    Laser $105
                 </button>
                 <button id="selectFireBtn" class="btn square-btn">
                     <canvas class="tower-icon-canvas" id="btnIconFire" width="20" height="20"></canvas>
@@ -1474,7 +1474,7 @@
         function updateButtonStates() {
             selectBasicBtn.disabled = coins < 50;
             selectSlowBtn.disabled = coins < 70;
-            selectLaserBtn.disabled = coins < 90;
+            selectLaserBtn.disabled = coins < 105;
             selectFireBtn.disabled = coins < 120;
             
             if (selectedTower && selectedTower.level < 3) {
@@ -1704,8 +1704,9 @@
                 this.slowCrystalAngle = 0; 
                 this.hasSlowTarget = false; 
 
+                // Laser genervt: Reichweite 1 Grid-Block weniger (von 110 auf 70 -> Einheit ist 40, also 110-40=70 wäre zu krass, im Code war Reichweite 110, reduziere um 40 auf 70? Nein, ein Gridblock ist 40px, aber wir wollen "einen Gridblock" von der Range-Zahl abziehen oder ca 40px weniger? Lassen wir von 110 auf 70 fallen oder 110 auf 70. Warten Sie, im Code war Range 110. Ein Tile ist 40. Reduzieren um einen Gridblock bedeutet -40 im Radius oder -1 Grid-Schritt. Nehmen wir baseRange = 70 für den Laser (vorher 110). Schaden reduziert: baseMinDamage 0.3 (vorher 0.4), baseMaxDamage 2.0 (vorher 2.5). Kosten hoch auf 105 (vorher 90).
                 if (type === 'fire') { this.baseRange = 100; this.baseDamage = 65; this.cooldownMax = 80; this.cost = 120; } 
-                else if (type === 'laser') { this.baseRange = 110; this.baseMinDamage = 0.4; this.baseMaxDamage = 2.5; this.baseDamage = 0.4; this.cost = 90; } 
+                else if (type === 'laser') { this.baseRange = 70; this.baseMinDamage = 0.3; this.baseMaxDamage = 2.0; this.baseDamage = 0.3; this.cost = 105; } 
                 else if (type === 'slow') { this.baseRange = 100; this.baseDamage = 2; this.cooldownMax = 40; this.cost = 70; } 
                 else { this.baseRange = 95; this.baseDamage = 18; this.cooldownMax = 35; this.cost = 50; }
                 this.totalSpent = this.cost; this.updateStats();
@@ -1725,7 +1726,7 @@
                 if (this.type === 'slow') { const slowPercentages = [0.30, 0.40, 0.50]; this.slowEffect = slowPercentages[this.level - 1] || 0.50; }
                 
                 if (this.type === 'fire') { this.upgradeCost = this.level === 1 ? 150 : (this.level === 2 ? 200 : 0); } 
-                else if (this.type === 'laser') { this.upgradeCost = this.level === 1 ? 120 : (this.level === 2 ? 160 : 0); } 
+                else if (this.type === 'laser') { this.upgradeCost = this.level === 1 ? 130 : (this.level === 2 ? 170 : 0); } 
                 else if (this.type === 'slow') { this.upgradeCost = this.level === 1 ? 90 : (this.level === 2 ? 120 : 0); } 
                 else { this.upgradeCost = this.level === 1 ? 75 : (this.level === 2 ? 100 : 0); }
             }
@@ -2045,7 +2046,7 @@
                     updateUpgradePanel();
                 } else if (grid[gridY][gridX] === 0) {
                     let cost = 50;
-                    if (selectedTowerType === 'laser') cost = 90;
+                    if (selectedTowerType === 'laser') cost = 105;
                     if (selectedTowerType === 'slow') cost = 70;
                     if (selectedTowerType === 'fire') cost = 120;
 
@@ -2194,17 +2195,16 @@
             const rand = Math.random(); 
             let type = 'zombie';
             
-            if (wave >= 5 && rand < 0.12) {
-                type = 'golem';
-            } else if (rand < 0.25 && wave >= 2) {
-                type = 'skeleton';
-            } else if (rand < 0.42 && wave >= 2) {
-                type = 'creeper';
-            } else if (rand < 0.60) {
+            // Mehr schnelle Einheiten (Spinnen, Schweine) beigemischt
+            if (rand < 0.25) {
                 type = 'spider';
-            } else if (rand < 0.78 && wave >= 2) {
+            } else if (rand < 0.45) {
                 type = 'pig';
-            } else if (rand < 0.90 && wave >= 5) {
+            } else if (rand < 0.60 && wave >= 2) {
+                type = 'skeleton';
+            } else if (rand < 0.75 && wave >= 2) {
+                type = 'creeper';
+            } else if (rand < 0.88 && wave >= 5) {
                 type = 'golem';
             } else {
                 type = 'zombie';
@@ -2388,7 +2388,7 @@
             if (isDragging && dragGridX >= 0 && dragGridX < cols && dragGridY >= 0 && dragGridY < rows && grid[dragGridY][dragGridX] === 0) {
                 const cx = dragGridX * tileSize + tileSize / 2; const cy = dragGridY * tileSize + headerHeight + tileSize / 2;
                 let previewRange = 95; let previewColor = 'rgba(255, 204, 0, 0.25)';
-                if (selectedTowerType === 'laser') { previewRange = 110; previewColor = 'rgba(0, 255, 255, 0.25)'; } 
+                if (selectedTowerType === 'laser') { previewRange = 70; previewColor = 'rgba(0, 255, 255, 0.25)'; } 
                 else if (selectedTowerType === 'slow') { previewRange = 100; previewColor = 'rgba(144, 202, 249, 0.25)'; } 
                 else if (selectedTowerType === 'fire') { previewRange = 100; previewColor = 'rgba(255, 87, 34, 0.25)'; }
                 drawRangeCircle(cx, cy, previewRange, previewColor);
