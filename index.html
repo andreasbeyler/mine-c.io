@@ -2234,46 +2234,42 @@
                 ctx.fillRect(bx, by, 2, 6); 
             }
 
-            // --- HOCHWERTIGE MINECRAFT-DEKO (WASSER, BÄUME, STEINE, BLUMEN) ---
+            // --- PERFEKTIONIERTE MINECRAFT-DEKO ---
             const decoRand = (x * 73 + y * 137) % 100;
 
             if (decoRand < 7) {
-                // 1. Großer Findling / Stein-Cluster (Cobblestone)
+                // 1. Grauer Stein / Cobblestone-Block
                 ctx.fillStyle = '#1a1a1a'; ctx.fillRect(px + 4, py + 4, 32, 32);
                 ctx.fillStyle = '#424242'; ctx.fillRect(px + 6, py + 6, 28, 28);
                 ctx.fillStyle = '#616161'; ctx.fillRect(px + 8, py + 8, 16, 16);
                 ctx.fillStyle = '#9e9e9e'; ctx.fillRect(px + 10, py + 10, 8, 8);
                 ctx.fillStyle = '#212121'; ctx.fillRect(px + 20, py + 20, 10, 10);
             } 
-            else if (decoRand >= 7 && decoRand < 14) {
-                // 2. Schicker Minecraft-Wasserteich mit Wellen-Effekt
-                ctx.fillStyle = '#01579b'; ctx.fillRect(px + 2, py + 2, 36, 36); // Uferrand dunkel
-                ctx.fillStyle = '#0288d1'; ctx.fillRect(px + 4, py + 4, 32, 32); // Wasser blau
-                
-                // Animierter Wellen-Glanz im Wasser
+            else if (decoRand >= 7 && decoRand < 15) {
+                // 2. Minecraft-Wasserteich
+                ctx.fillStyle = '#01579b'; ctx.fillRect(px + 2, py + 2, 36, 36); 
+                ctx.fillStyle = '#0288d1'; ctx.fillRect(px + 4, py + 4, 32, 32); 
                 const time = Date.now() * 0.004;
                 const waveOffset = Math.sin(time + x) * 4;
                 ctx.fillStyle = '#4fc3f7'; 
-                ctx.fillRect(px + 8 + waveOffset, py + 12, 12, 6);
-                ctx.fillRect(px + 18 - waveOffset, py + 24, 10, 5);
+                ctx.fillRect(px + 8 + waveOffset, py + 12, 12, 5);
             } 
-            else if (decoRand >= 14 && decoRand < 20) {
-                // 3. Große Rote Blume (Mohn / Poppy) auf breitem Stängel
-                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 16, py + 18, 8, 16); // Breiter grüner Stängel
-                ctx.fillStyle = '#b71c1c'; ctx.fillRect(px + 8, py + 6, 24, 16);  // Blüten-Schatten
-                ctx.fillStyle = '#f44336'; ctx.fillRect(px + 10, py + 8, 20, 12);  // Blütenblatt rot
-                ctx.fillStyle = '#ffeb3b'; ctx.fillRect(px + 16, py + 12, 8, 6);   // Gelbe Mitte
+            else if (decoRand >= 15 && decoRand < 22) {
+                // 3. Echte Mohnblume (Poppy) - schmaler Stängel, rote Blütenblätter
+                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 18, py + 22, 4, 12); // Stängel
+                // Blütenform im Pixel-Look
+                ctx.fillStyle = '#b71c1c'; ctx.fillRect(px + 12, py + 10, 16, 12);
+                ctx.fillStyle = '#f44336'; ctx.fillRect(px + 14, py + 12, 12, 8);
+                ctx.fillStyle = '#ffcdd2'; ctx.fillRect(px + 16, py + 14, 4, 4);  // Glanzpunkt
             } 
-            else if (decoRand >= 20 && decoRand < 26) {
-                // 4. Echter großer Minecraft-Baum mit massiver Krone
-                // Stamm im unteren Bereich
-                ctx.fillStyle = '#271c19'; ctx.fillRect(px + 14, py + 18, 12, 20);
-                ctx.fillStyle = '#4e342e'; ctx.fillRect(px + 16, py + 18, 8, 20);
-                // Große grüne Blätterkrone (füllt das Feld optimal aus)
-                ctx.fillStyle = '#0d280d'; ctx.fillRect(px + 2, py + 2, 36, 24);
-                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 4, py + 4, 32, 20);
-                ctx.fillStyle = '#2e7d32'; ctx.fillRect(px + 8, py + 6, 24, 12);
-                ctx.fillStyle = '#4caf50'; ctx.fillRect(px + 12, py + 8, 8, 6); // Helles Glanzlicht oben
+            else if (decoRand >= 22 && decoRand < 30) {
+                // 4. Klassischer Minecraft-Baum
+                ctx.fillStyle = '#271c19'; ctx.fillRect(px + 14, py + 16, 12, 22); // Stamm
+                ctx.fillStyle = '#4e342e'; ctx.fillRect(px + 16, py + 16, 8, 22);
+                // Blätterkrone
+                ctx.fillStyle = '#0d280d'; ctx.fillRect(px + 2, py + 2, 36, 20);
+                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 4, py + 4, 32, 16);
+                ctx.fillStyle = '#2e7d32'; ctx.fillRect(px + 8, py + 6, 24, 10);
             }
         }
 
