@@ -2220,13 +2220,43 @@
         }
 
         function drawGrass(px, py, x, y) {
-            ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; ctx.fillRect(px, py, tileSize, tileSize);
-            const seed = x * 13 + y * 31; const numBlades = (seed % 3) + 2; 
+            // Grundlegendes Gras-Muster
+            ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; 
+            ctx.fillRect(px, py, tileSize, tileSize);
+            
+            const seed = x * 13 + y * 31; 
+            const numBlades = (seed % 3) + 2; 
             ctx.fillStyle = (x + y) % 2 === 0 ? '#2E6930' : '#275B28';
+            
             for(let i = 0; i < numBlades; i++) {
                 const bx = px + ((seed * (i+1) * 7) % (tileSize - 6)) + 3;
                 const by = py + ((seed * (i+2) * 11) % (tileSize - 6)) + 3;
                 ctx.fillRect(bx, by, 3, 5); 
+            }
+
+            // --- NEU: Deko-Elemente im Minecraft-Style (Zufällig basierend auf Koordinaten) ---
+            const decoRand = (x * 73 + y * 137) % 100;
+
+            if (decoRand < 8) {
+                // Kleiner grauer Stein (Cobblestone-Style)
+                ctx.fillStyle = '#555555';
+                ctx.fillRect(px + 12, py + 14, 8, 8);
+                ctx.fillStyle = '#777777';
+                ctx.fillRect(px + 14, py + 16, 4, 4);
+            } else if (decoRand >= 8 && decoRand < 14) {
+                // Kleiner Busch / Blätterblock
+                ctx.fillStyle = '#1b5e20';
+                ctx.fillRect(px + 10, py + 10, 16, 16);
+                ctx.fillStyle = '#2e7d32';
+                ctx.fillRect(px + 12, py + 12, 12, 12);
+            } else if (decoRand >= 14 && decoRand < 18) {
+                // Rote Blume (Poppy-Style)
+                ctx.fillStyle = '#2e7d32'; // Stängel
+                ctx.fillRect(px + 18, py + 18, 4, 10);
+                ctx.fillStyle = '#f44336'; // Blütenkopf
+                ctx.fillRect(px + 14, py + 14, 12, 8);
+                ctx.fillStyle = '#ffeb3b'; // Zentrum
+                ctx.fillRect(px + 18, py + 16, 4, 4);
             }
         }
 
