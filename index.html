@@ -671,7 +671,7 @@
                 <canvas class="threat-icon-canvas" id="iconGolem" width="32" height="32"></canvas>
                 <div class="threat-info">
                     <div class="threat-name">Iron Golem</div>
-                    <div class="threat-desc">Massive and heavily armored, but very slow. Shrugs off light attacks.</div>
+                    <div class="threat-desc">Massive and heavily armored, but slow. Glows red and speeds up nearby enemies by 30% when below 20% HP!</div>
                     <div class="threat-stats">100 HP • $15 Reward</div>
                 </div>
             </div>
@@ -2067,7 +2067,7 @@
         class Enemy {
             constructor(startX, startY, type, forcedNodeIndex = 1) {
                 this.x = startX * tileSize + tileSize / 2; this.y = startY * tileSize + headerHeight + tileSize / 2;
-                this.type = type; this.targetIndex = forcedNodeIndex; this.reachedEnd = false; this.currentSlow = 0; this.isLasered = false; this.animTimer = Math.random() * 100;
+                this.type = type; this.targetIndex = forcedNodeIndex; this.reachedEnd = false; this.currentSlow = 0; this.speedBoost = 0; this.isLasered = false; this.animTimer = Math.random() * 100;
 
                 if (type === 'boss') { 
                     this.name = 'Wither Boss'; 
@@ -2079,7 +2079,7 @@
                 } 
                 else if (type === 'minicreeper') {
                     this.name = 'Mini Creeper';
-                    this.baseSpeed = 3.2 + (wave * 0.08); // Sehr schnell!
+                    this.baseSpeed = 3.2 + (wave * 0.08); 
                     this.maxHp = 10 + Math.round(wave * 2);
                     this.size = 16;
                     this.reward = 3;
@@ -2094,19 +2094,20 @@
             }
 
             update() {
-                let currentSpeed = this.baseSpeed * (1 - this.currentSlow);
+                // Effektives Tempo berechnen (Basis + Golem-Buff - Verlangsamung)
+                let netSpeed = (this.baseSpeed * (1 + this.speedBoost)) * (1 - this.currentSlow);
                 
-                this.animTimer += currentSpeed;
+                this.animTimer += netSpeed;
                 const targetNode = pathNodes[this.targetIndex];
                 if (!targetNode) { this.reachedEnd = true; return; }
 
                 const tx = targetNode.x * tileSize + tileSize / 2; const ty = targetNode.y * tileSize + headerHeight + tileSize / 2;
                 const dx = tx - this.x; const dy = ty - this.y; const dist = Math.hypot(dx, dy);
                 
-                if (dist <= currentSpeed) {
+                if (dist <= netSpeed) {
                     this.x = tx; this.y = ty; this.targetIndex++; if (this.targetIndex >= pathNodes.length) this.reachedEnd = true;
                 } else {
-                    this.x += (dx / dist) * currentSpeed; this.y += (dy / dist) * currentSpeed;
+                    this.x += (dx / dist) * netSpeed; this.y += (dy / dist) * netSpeed;
                 }
             }
 
@@ -2119,6 +2120,8 @@
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
                 ctx.shadowBlur = 6;
                 ctx.shadowOffsetY = 4;
+
+                const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.2);
 
                 if (this.type === 'pig') {
                     ctx.fillStyle = '#f48fb1'; ctx.fillRect(-10, -8, 20, 16);
@@ -2152,11 +2155,13 @@
                     ctx.fillStyle = '#ff0000'; ctx.fillRect(-4, -8, 2, 2); ctx.fillStyle = '#ff0000'; ctx.fillRect(2, -8, 2, 2);
                     ctx.fillStyle = '#1a1a1a'; ctx.fillRect(-12, -4, 24, 2); ctx.fillRect(-12, 2, 24, 2);
                 } else if (this.type === 'golem') {
-                    ctx.fillStyle = '#9e9e9e'; ctx.fillRect(-14, -14, 28, 28);
+                    ctx.fillStyle = isGolemRaging ? '#d32f2f' : '#9e9e9e'; 
+                    ctx.fillRect(-14, -14, 28, 28);
                     ctx.shadowColor = 'transparent';
-                    ctx.fillStyle = '#757575'; ctx.fillRect(-10, -10, 20, 20);
-                    ctx.fillStyle = '#d32f2f'; ctx.fillRect(-2, -2, 4, 4);
-                    ctx.fillStyle = '#212121'; ctx.fillRect(-8, -8, 4, 4); ctx.fillRect(4, -8, 4, 4);
+                    ctx.fillStyle = isGolemRaging ? '#ff5252' : '#757575'; 
+                    ctx.fillRect(-10, -10, 20, 20);
+                    ctx.fillStyle = isGolemRaging ? '#ffffff' : '#d32f2f'; ctx.fillRect(-2, -2, 4, 4);
+                    ctx.fillStyle = isGolemRaging ? '#ffeb3b' : '#212121'; ctx.fillRect(-8, -8, 4, 4); ctx.fillRect(4, -8, 4, 4);
                 } else if (this.type === 'boss') {
                     ctx.fillStyle = '#111111'; ctx.fillRect(-16, -12, 32, 24);
                     ctx.shadowColor = 'transparent';
@@ -2175,6 +2180,20 @@
                 }
 
                 ctx.restore();
+
+                // Golem Raging Aura Effekt (Rotes Leuchten um den Golem bei <= 20% HP)
+                if (isGolemRaging) {
+                    ctx.save();
+                    const auraPulse = 18 + Math.sin(Date.now() * 0.02) * 5;
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.shadowColor = '#ff0000';
+                    ctx.shadowBlur = 12;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, auraPulse, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.restore();
+                }
 
                 if (this.isLasered) {
                     ctx.save();
@@ -2327,8 +2346,27 @@
         function updateLogic() {
             if (gameOver) return;
             
+            // 1. Alle Buffs und Slows vor dem Update zurücksetzen
             for (let enemy of enemies) {
                 enemy.currentSlow = 0;
+                enemy.speedBoost = 0;
+            }
+
+            // 2. Golem Aura-Logik auswerten (2,5 Grid-Blöcke = 2.5 * 40 = 100 Pixel Radius)
+            const golemBuffRadius = 2.5 * tileSize;
+            const golems = enemies.filter(e => e.type === 'golem');
+
+            for (let golem of golems) {
+                // Wenn Golem unter oder gleich 20% HP hat
+                if (golem.hp <= golem.maxHp * 0.2) {
+                    for (let other of enemies) {
+                        const dist = Math.hypot(other.x - golem.x, other.y - golem.y);
+                        if (dist <= golemBuffRadius) {
+                            // 30% Tempo-Erhöhung für alle Einheiten im Umkreis
+                            other.speedBoost = Math.max(other.speedBoost, 0.30);
+                        }
+                    }
+                }
             }
 
             if (waveInProgress) {
@@ -2375,10 +2413,8 @@
                     soundFX.pop(); 
                     spawnGibs(enemy.x, enemy.y, enemy.type);
                     
-                    // Creeper stirbt -> Explosion & Mini-Creeper spawnen
                     if (enemy.type === 'creeper') {
                         explosions.push(new Explosion(enemy.x, enemy.y));
-                        // 2 Mini-Creeper spawnen an gleicher Stelle, setzen den Weg fort
                         for (let m = 0; m < 2; m++) {
                             const mini = new Enemy(0, 0, 'minicreeper', enemy.targetIndex);
                             mini.x = enemy.x + (Math.random() - 0.5) * 10;
