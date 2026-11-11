@@ -1267,22 +1267,74 @@
 
         fetchLeaderboard();
 
-        async function handleSaveScore() {
+       async function handleSaveScore() {
             if (!currentUser) return;
             soundFX.click();
-            
-            await supabaseClient
-                .from('leaderboard')
-                .upsert({
-                    id: currentUser.id,
-                    name: currentUsername,
-                    wave: pendingWave,
-                    score: pendingScore,
-                    updated_at: new Date()
-                });
-            
-            await fetchLeaderboard();
-            closeScoreSection();
+
+            // Button temporär deaktivieren, damit nicht doppelt geklickt wird
+            saveScoreBtn.disabled = true;
+            saveScoreBtn.innerText = 'SAVING...';
+
+            try {
+                // 1. Aktuellen Highscore des Spielers abrufen
+                const { data: existingEntry, error: fetchError } = await supabaseClient
+                    .from('leaderboard')
+                    .select('score, wave')
+                    .eq('id', currentUser.id)
+                    .maybeSingle();
+
+                if (fetchError) throw fetchError;
+
+                let isNewHighscore = true;
+
+                if (existingEntry) {
+                    // Prüfen, ob der neue Score WIRKLICH besser ist
+                    // (Höhere Welle ODER gleiche Welle aber mehr Kills)
+                    if (pendingWave < existingEntry.wave || (pendingWave === existingEntry.wave && pendingScore <= existingEntry.score)) {
+                        isNewHighscore = false; // Neuer Score ist schlechter, nicht überschreiben
+                    }
+                }
+
+                if (isNewHighscore) {
+                    if (existingEntry) {
+                        // UPDATE ausführen (Eintrag existiert und Score ist besser)
+                        const { error: updateError } = await supabaseClient
+                            .from('leaderboard')
+                            .update({
+                                name: currentUsername,
+                                wave: pendingWave,
+                                score: pendingScore,
+                                updated_at: new Date()
+                            })
+                            .eq('id', currentUser.id);
+                        
+                        if (updateError) throw updateError;
+                    } else {
+                        // INSERT ausführen (Noch gar kein Eintrag vorhanden)
+                        const { error: insertError } = await supabaseClient
+                            .from('leaderboard')
+                            .insert({
+                                id: currentUser.id,
+                                name: currentUsername,
+                                wave: pendingWave,
+                                score: pendingScore,
+                                updated_at: new Date()
+                            });
+                        
+                        if (insertError) throw insertError;
+                    }
+                }
+            } catch (err) {
+                console.error("Fehler beim Speichern des Scores:", err);
+                alert("Fehler beim Speichern: " + err.message);
+            } finally {
+                saveScoreBtn.disabled = false;
+                saveScoreBtn.innerText = 'SAVE SCORE';
+                
+                // Leaderboard neu laden und Fenster schließen
+                await fetchLeaderboard();
+                closeScoreSection();
+            }
         }
 
         playBtn.addEventListener('click', () => {
