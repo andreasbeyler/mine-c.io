@@ -36,8 +36,6 @@
             padding: 40px 20px 40px 20px;
             box-sizing: border-box;
             background-color: #0a0a0a;
-            position: relative;
-            z-index: 20;
         }
 
         .header-section {
@@ -153,9 +151,6 @@
             margin-bottom: 40px;
             transition: all 0.2s ease;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
-            position: relative;
-            z-index: 30;
-            pointer-events: auto;
         }
 
         #playBtn:hover {
@@ -619,7 +614,6 @@
             </div>
         </div>
 
-        <!-- Leaderboard -->
         <div class="section-container">
             <div class="section-title">LEADERBOARD</div>
             <div id="leaderboardList"></div>
@@ -677,7 +671,7 @@
                 <canvas class="threat-icon-canvas" id="iconGolem" width="32" height="32"></canvas>
                 <div class="threat-info">
                     <div class="threat-name">Iron Golem</div>
-                    <div class="threat-desc">Massive and heavily armored, but slow. Glows red and speeds up nearby enemies by 30% within a 1.5 grid radius when below 20% HP!</div>
+                    <div class="threat-desc">Massive and heavily armored, but slow. Glows red and speeds up nearby enemies by 30% when below 20% HP!</div>
                     <div class="threat-stats">100 HP • $15 Reward</div>
                 </div>
             </div>
@@ -839,6 +833,7 @@
         }
 
         async function checkInitialAuth() {
+            // 1. Priorisierter Hash-Check für Password-Reset
             const hash = window.location.hash;
             if (hash && hash.includes('type=recovery')) {
                 authSection.style.display = 'none';
@@ -847,6 +842,7 @@
                 return;
             }
 
+            // 2. Normaler Session-Check
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session && session.user && resetPasswordSection.style.display !== 'flex') {
                 const uname = await fetchUserProfile(session.user.id);
@@ -855,6 +851,7 @@
         }
         checkInitialAuth();
 
+        // Supabase-Event abfangen, falls das Event oder der Hash verzögert eintreffen
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'PASSWORD_RECOVERY' || (window.location.hash && window.location.hash.includes('type=recovery'))) {
                 authSection.style.display = 'none';
@@ -863,6 +860,7 @@
             }
         });
 
+        // Neues Passwort speichern
         saveNewPasswordBtn.addEventListener('click', async () => {
             soundFX.click();
             resetMsg.innerText = '';
@@ -1242,8 +1240,6 @@
             if (!error && data) {
                 leaderboardData = data;
                 updateLeaderboardUI();
-            } else {
-                console.error("Leaderboard konnte nicht geladen werden:", error);
             }
         }
 
@@ -1354,7 +1350,7 @@
             gameWrapper.style.display = 'none';
             
             startScreen.style.display = 'flex';
-            playBtn.style.display = 'block';
+            playBtn.style.display = 'none';
             newScoreSection.style.display = 'flex';
             
             document.getElementById('nsKilled').innerText = pendingScore;
@@ -2115,26 +2111,6 @@
             }
 
             draw(ctx) {
-                const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.2);
-
-                if (isGolemRaging) {
-                    ctx.save();
-                    const radiusPx = 1.5 * tileSize;
-                    const pulseAlpha = 0.15 + Math.sin(Date.now() * 0.015) * 0.08;
-                    ctx.fillStyle = `rgba(255, 0, 0, ${pulseAlpha})`;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, radiusPx, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.5)';
-                    ctx.lineWidth = 1.5;
-                    ctx.setLineDash([4, 4]);
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, radiusPx, 0, Math.PI * 2);
-                    ctx.stroke();
-                    ctx.restore();
-                }
-
                 ctx.save();
                 ctx.translate(this.x, this.y);
                 const bounce = Math.sin(this.animTimer * 0.35) * 3;
@@ -2143,6 +2119,8 @@
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
                 ctx.shadowBlur = 6;
                 ctx.shadowOffsetY = 4;
+
+                const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.2);
 
                 if (this.type === 'pig') {
                     ctx.fillStyle = '#f48fb1'; ctx.fillRect(-10, -8, 20, 16);
@@ -2267,18 +2245,22 @@
             ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; 
             ctx.fillRect(px, py, tileSize, tileSize);
             
+            // Wiederhergestellte Deko (Bäumchen/Steine/Grashalme)
             const seed = (x * 37 + y * 17) % 100;
             if (seed < 12) {
+                // Kleiner Stein / Kiesel
                 ctx.fillStyle = '#757575';
                 ctx.fillRect(px + 8, py + 22, 10, 6);
                 ctx.fillStyle = '#9e9e9e';
                 ctx.fillRect(px + 10, py + 20, 6, 4);
             } else if (seed < 22) {
+                // Kleines Büschchen / Bäumchen
                 ctx.fillStyle = '#1b5e20';
                 ctx.fillRect(px + 12, py + 12, 14, 14);
                 ctx.fillStyle = '#2e7d32';
                 ctx.fillRect(px + 14, py + 10, 10, 10);
             } else {
+                // Klassische Grashalme
                 const bladeSeed = x * 13 + y * 31; 
                 const numBlades = (bladeSeed % 2) + 1; 
                 ctx.fillStyle = (x + y) % 2 === 0 ? '#2E6930' : '#275B28';
@@ -2384,7 +2366,7 @@
                 enemy.speedBoost = 0;
             }
 
-            const golemBuffRadius = 1.5 * tileSize;
+            const golemBuffRadius = 2.5 * tileSize;
             const golems = enemies.filter(e => e.type === 'golem');
 
             for (let golem of golems) {
