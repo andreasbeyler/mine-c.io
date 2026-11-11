@@ -953,12 +953,15 @@
             });
 
             if (error) {
-                if (error.message.includes('already registered') || error.status === 422) {
-                    authMsg.innerText = 'Ein Account mit dieser E-Mail-Adresse existiert bereits.';
-                } else {
-                    authMsg.innerText = error.message;
-                }
+                authMsg.innerText = error.message;
             } else {
+                // NEU: Supabase Email-Enumeration-Schutz abfangen
+                if (data.user && data.user.identities && data.user.identities.length === 0) {
+                    authMsg.style.color = '#ff5555';
+                    authMsg.innerText = 'Ein Account mit dieser E-Mail-Adresse existiert bereits.';
+                    return;
+                }
+
                 authMsg.style.color = '#00ff00';
                 authMsg.innerText = 'Registrierung erfolgreich! Bitte E-Mail bestätigen.';
             }
