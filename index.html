@@ -1008,12 +1008,26 @@
 
         function drawThreatIcons() {
             const ctxZ = setupIconCanvas('iconZombie', 32);
-            ctxZ.fillStyle = '#1565c0'; ctxZ.fillRect(8, 12, 16, 14);
-            ctxZ.fillStyle = '#2e7d32'; ctxZ.fillRect(8, 2, 16, 12);
-            ctxZ.fillStyle = '#000000'; ctxZ.fillRect(11, 6, 3, 3);
-            ctxZ.fillStyle = '#000000'; ctxZ.fillRect(18, 6, 3, 3);
-            ctxZ.fillStyle = '#37474f'; ctxZ.fillRect(8, 26, 16, 6);
-            ctxZ.fillStyle = '#2e7d32'; ctxZ.fillRect(20, 10, 8, 5);
+            // Kopf
+            ctxZ.fillStyle = '#388E3C'; ctxZ.fillRect(10, 2, 12, 12);
+            // Augen und Nase/Mund
+            ctxZ.fillStyle = '#111111'; ctxZ.fillRect(11, 6, 3, 3); ctxZ.fillRect(18, 6, 3, 3);
+            ctxZ.fillStyle = '#1B5E20'; ctxZ.fillRect(14, 10, 4, 2);
+            
+            // Ärmel (Blau) und Arme (Grün)
+            ctxZ.fillStyle = '#1976D2'; 
+            ctxZ.fillRect(6, 14, 4, 4); // Linker Ärmel
+            ctxZ.fillRect(22, 14, 4, 4); // Rechter Ärmel
+            ctxZ.fillStyle = '#388E3C'; 
+            ctxZ.fillRect(6, 18, 4, 6); // Linker Arm
+            ctxZ.fillRect(22, 18, 4, 6); // Rechter Arm
+            
+            // Körper (Hemd)
+            ctxZ.fillStyle = '#1976D2'; ctxZ.fillRect(10, 14, 12, 10);
+            
+            // Hosen und Schuhe
+            ctxZ.fillStyle = '#283593'; ctxZ.fillRect(10, 24, 12, 6);
+            ctxZ.fillStyle = '#424242'; ctxZ.fillRect(10, 28, 4, 2); ctxZ.fillRect(18, 28, 4, 2);
 
             const ctxP = setupIconCanvas('iconPig', 32);
             ctxP.fillStyle = '#f48fb1'; ctxP.fillRect(6, 10, 20, 14);
@@ -2232,13 +2246,36 @@
                     ctx.fillStyle = '#333333'; ctx.fillRect(-18, -24 + headBob, 10, 10); ctx.fillRect(-6, -28 + headBob, 12, 12); ctx.fillRect(8, -24 + headBob, 10, 10);
                     ctx.fillStyle = '#ffcc00'; ctx.fillRect(-16, -22 + headBob, 6, 4); ctx.fillRect(10, -22 + headBob, 6, 4);
                     ctx.fillStyle = '#ff1744'; ctx.fillRect(-15, -21 + headBob, 3, 3); ctx.fillStyle = '#ff1744'; ctx.fillRect(-3, -24 + headBob, 4, 4); ctx.fillStyle = '#ff1744'; ctx.fillRect(10, -21 + headBob, 3, 3);
-                } else {
-                    ctx.fillStyle = '#1565c0'; ctx.fillRect(-8, -6, 16, 14);
+                } else { // Zombie
+                    // Kopf
+                    ctx.fillStyle = '#388E3C'; ctx.fillRect(-6, -18, 12, 12);
                     ctx.shadowColor = 'transparent';
-                    ctx.fillStyle = '#2e7d32'; ctx.fillRect(-8, -18, 16, 12);
-                    ctx.fillStyle = '#000000'; ctx.fillRect(-5, -14, 3, 3); ctx.fillRect(2, -14, 3, 3);
-                    ctx.fillStyle = '#37474f'; ctx.fillRect(-8, 8, 16, 6);
-                    ctx.fillStyle = '#2e7d32'; ctx.fillRect(6, -8, 10, 6);
+                    
+                    // Augen und Zombie-Mund
+                    ctx.fillStyle = '#111111'; 
+                    ctx.fillRect(-5, -14, 3, 3); // Linkes Auge
+                    ctx.fillRect(2, -14, 3, 3);  // Rechtes Auge
+                    ctx.fillStyle = '#1B5E20'; 
+                    ctx.fillRect(-2, -10, 4, 2); // Mund/Nase
+                    
+                    // Ärmel (Blau) und Arme (Grün)
+                    ctx.fillStyle = '#1976D2'; 
+                    ctx.fillRect(-10, -6, 4, 4); // Ärmel links
+                    ctx.fillRect(6, -6, 4, 4);   // Ärmel rechts
+                    ctx.fillStyle = '#388E3C'; 
+                    ctx.fillRect(-10, -2, 4, 6); // Arm links
+                    ctx.fillRect(6, -2, 4, 6);   // Arm rechts
+                    
+                    // Körper (Hemd)
+                    ctx.fillStyle = '#1976D2'; ctx.fillRect(-6, -6, 12, 12);
+                    
+                    // Hosen (Dunkelblau/Indigo)
+                    ctx.fillStyle = '#283593'; ctx.fillRect(-6, 6, 12, 6);
+                    
+                    // Schuhe
+                    ctx.fillStyle = '#424242'; 
+                    ctx.fillRect(-6, 10, 4, 2); 
+                    ctx.fillRect(2, 10, 4, 2);
                 }
 
                 ctx.restore();
