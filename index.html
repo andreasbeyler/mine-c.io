@@ -724,7 +724,7 @@
 
                 <h3>Das Spiel</h3>
                 <p><strong>Statistik:</strong> Zu jeder Partie meldet das Spiel: eine zufällige Kennung der Partie, den Zeitpunkt, die erreichte Welle, die Zahl der abgewehrten Gegner, die Spieldauer und wie die Partie endete; der Server ergänzt Ihre IP-Adresse. Öffentlich sind nur Summen und Verteilungen. Die IP-Adresse wird nach 30 Tagen entfernt, die übrigen Angaben bleiben für die Statistik. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Betrieb und Weiterentwicklung des Spiels, Schutz vor Missbrauch).</p>
-                <p><strong>Bestenliste:</strong> Nur wenn Sie eine Partie einreichen: der gewählte Name, die erreichte Welle, der Zeitpunkt und Ihre IP-Adresse. Öffentlich sichtbar sind Name, Welle, Datum und Score. Der Eintrag bleibt, solange er unter den Besten ist; die IP-Adresse wird nach 30 Tagen entfernt. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Bestenliste, Schutz vor Manipulation). Auf Wunsch entferne ich Ihren Eintrag.</p>
+                <p><strong>Bestenliste:</strong> Nur wenn Sie eine Partie einreichen: der gewählte Name, die erreichte Welle, die Zeitpunkt und Ihre IP-Adresse. Öffentlich sichtbar sind Name, Welle, Datum und Score. Der Eintrag bleibt, solange er unter den Besten ist; die IP-Adresse wird nach 30 Tagen entfernt. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Bestenliste, Schutz vor Manipulation). Auf Wunsch entferne ich Ihren Eintrag.</p>
                 <p><strong>Schutz vor Missbrauch:</strong> Um die Zahl der Anfragen je Absender zu begrenzen, hält der Server IP-Adressen mit einem Zähler im Arbeitsspeicher, höchstens bis zum Ende des Tages.</p>
                 <p><strong>Im Browser:</strong> Das Spiel speichert in Ihrem Browser (localStorage): Ihr bestes Ergebnis, den zuletzt verwendeten Namen, ob der Ton an ist und Spielparameter. Diese Angaben bleiben auf Ihrem Gerät, werden nicht übertragen und sind nur für die gewünschten Funktionen des Spiels nötig (§ 25 Abs. 2 Nr. 2 TDDDG). Sie können sie über Ihren Browser jederzeit löschen.</p>
 
@@ -2073,7 +2073,7 @@
                     this.name = 'Wither Boss'; 
                     this.baseSpeed = 0.5; 
                     const bm = 1 + ((wave - 10) / 10) * 0.6; 
-                    this.maxHp = Math.round(7125 * Math.max(1, bm)); // 7125 HP (~25% stärker)
+                    this.maxHp = Math.round(7125 * Math.max(1, bm)); 
                     this.size = 42; 
                     this.reward = 250; 
                 } 
@@ -2194,17 +2194,21 @@
             const rand = Math.random(); 
             let type = 'zombie';
             
-            let skeletonChance = wave < 5 ? 0.10 : 0.22;
-            let creeperChance = skeletonChance + (wave < 5 ? 0.12 : 0.20);
-            let spiderChance = creeperChance + 0.18;
-            let golemChance = spiderChance + 0.12;
-
-            if (wave >= 5 && rand < 0.15) type = 'golem'; 
-            else if (rand < golemChance && wave >= 2) type = 'golem';
-            else if (rand < spiderChance) type = 'spider';
-            else if (rand < creeperChance && wave >= 2) type = 'creeper';
-            else if (rand < skeletonChance && wave >= 2) type = 'skeleton';
-            else if (rand < 0.85 && wave >= 2) type = 'pig';
+            if (wave >= 5 && rand < 0.12) {
+                type = 'golem';
+            } else if (rand < 0.25 && wave >= 2) {
+                type = 'skeleton';
+            } else if (rand < 0.42 && wave >= 2) {
+                type = 'creeper';
+            } else if (rand < 0.60) {
+                type = 'spider';
+            } else if (rand < 0.78 && wave >= 2) {
+                type = 'pig';
+            } else if (rand < 0.90 && wave >= 5) {
+                type = 'golem';
+            } else {
+                type = 'zombie';
+            }
 
             enemies.push(new Enemy(pathNodes[0].x, pathNodes[0].y, type));
         }
