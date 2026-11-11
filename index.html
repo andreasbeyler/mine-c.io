@@ -2224,57 +2224,50 @@
             ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; 
             ctx.fillRect(px, py, tileSize, tileSize);
             
+            // Dezente Grashalme
             const seed = x * 13 + y * 31; 
-            const numBlades = (seed % 3) + 2; 
+            const numBlades = (seed % 2) + 1; 
             ctx.fillStyle = (x + y) % 2 === 0 ? '#2E6930' : '#275B28';
-            
             for(let i = 0; i < numBlades; i++) {
-                const bx = px + ((seed * (i+1) * 7) % (tileSize - 6)) + 3;
-                const by = py + ((seed * (i+2) * 11) % (tileSize - 6)) + 3;
-                ctx.fillRect(bx, by, 3, 5); 
+                const bx = px + ((seed * (i+1) * 7) % (tileSize - 8)) + 4;
+                const by = py + ((seed * (i+2) * 11) % (tileSize - 8)) + 4;
+                ctx.fillRect(bx, by, 2, 6); 
             }
 
-            // --- ZUFÄLLIGE DEKO IM MINECRAFT-STYLE ---
+            // --- SAUBERE MINECRAFT-DEKO ELEMENTE ---
             const decoRand = (x * 73 + y * 137) % 100;
 
-            if (decoRand < 6) {
-                // 1. Kleiner Stein / Cobblestone
-                ctx.fillStyle = '#555555';
-                ctx.fillRect(px + 12, py + 14, 10, 10);
-                ctx.fillStyle = '#777777';
-                ctx.fillRect(px + 14, py + 16, 5, 5);
-                ctx.fillStyle = '#333333';
-                ctx.fillRect(px + 13, py + 21, 3, 3);
-            } else if (decoRand >= 6 && decoRand < 11) {
-                // 2. Kleiner Busch / Blätterblock
-                ctx.fillStyle = '#1b5e20';
-                ctx.fillRect(px + 8, py + 8, 24, 24);
-                ctx.fillStyle = '#2e7d32';
-                ctx.fillRect(px + 10, py + 10, 20, 20);
-                ctx.fillStyle = '#388e3c';
-                ctx.fillRect(px + 14, py + 14, 8, 8);
-            } else if (decoRand >= 11 && decoRand < 15) {
-                // 3. Rote Blume (Poppy)
-                ctx.fillStyle = '#2e7d32'; // Stängel
-                ctx.fillRect(px + 18, py + 20, 4, 10);
-                ctx.fillStyle = '#d32f2f'; // Blütenkopf
-                ctx.fillRect(px + 14, py + 14, 12, 8);
-                ctx.fillStyle = '#ffeb3b'; // Zentrum
-                ctx.fillRect(px + 18, py + 16, 4, 4);
-            } else if (decoRand >= 15 && decoRand < 18) {
-                // 4. Mini-Baum (Eichen-Style)
-                // Stamm
-                ctx.fillStyle = '#5d4037';
-                ctx.fillRect(px + 16, py + 20, 8, 14);
-                ctx.fillStyle = '#4e342e';
-                ctx.fillRect(px + 20, py + 20, 4, 14);
-                // Krone
-                ctx.fillStyle = '#1b5e20';
-                ctx.fillRect(px + 8, py + 6, 24, 16);
-                ctx.fillStyle = '#2e7d32';
-                ctx.fillRect(px + 10, py + 4, 20, 16);
-                ctx.fillStyle = '#388e3c';
-                ctx.fillRect(px + 14, py + 6, 8, 8);
+            if (decoRand < 7) {
+                // 1. Grauer Stein-Block (Cobblestone-Style, 16x16 Pixel blockig)
+                ctx.fillStyle = '#222222'; ctx.fillRect(px + 6, py + 6, 28, 28);
+                ctx.fillStyle = '#555555'; ctx.fillRect(px + 8, py + 8, 24, 24);
+                ctx.fillStyle = '#777777'; ctx.fillRect(px + 10, py + 10, 10, 10);
+                ctx.fillStyle = '#444444'; ctx.fillRect(px + 22, py + 18, 8, 8);
+                ctx.fillStyle = '#333333'; ctx.fillRect(px + 12, py + 22, 8, 8);
+            } 
+            else if (decoRand >= 7 && decoRand < 13) {
+                // 2. Großer Minecraft-Busch / Blätterblock
+                ctx.fillStyle = '#113311'; ctx.fillRect(px + 4, py + 4, 32, 32);
+                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 6, py + 6, 28, 28);
+                ctx.fillStyle = '#2e7d32'; ctx.fillRect(px + 8, py + 8, 14, 14);
+                ctx.fillStyle = '#388e3c'; ctx.fillRect(px + 10, py + 10, 6, 6);
+            } 
+            else if (decoRand >= 13 && decoRand < 17) {
+                // 3. Rote Blume (Mohn / Poppy) mit Stängel
+                ctx.fillStyle = '#2e7d32'; ctx.fillRect(px + 18, py + 20, 4, 12); // Stängel
+                ctx.fillStyle = '#8a0000'; ctx.fillRect(px + 10, py + 10, 20, 14); // Blüten-Schatten
+                ctx.fillStyle = '#f44336'; ctx.fillRect(px + 12, py + 12, 16, 10); // Blume rot
+                ctx.fillStyle = '#ffeb3b'; ctx.fillRect(px + 18, py + 15, 4, 4);   // Gelbe Mitte
+            } 
+            else if (decoRand >= 17 && decoRand < 20) {
+                // 4. Echter Minecraft-Baum (kleiner Stamm + große Krone)
+                // Stamm unten
+                ctx.fillStyle = '#3e2723'; ctx.fillRect(px + 16, py + 22, 8, 14);
+                ctx.fillStyle = '#5d4037'; ctx.fillRect(px + 18, py + 22, 4, 14);
+                // Blätterkrone groß
+                ctx.fillStyle = '#0f380f'; ctx.fillRect(px + 4, py + 2, 32, 24);
+                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 6, py + 4, 28, 20);
+                ctx.fillStyle = '#2e7d32'; ctx.fillRect(px + 10, py + 6, 12, 10);
             }
         }
 
