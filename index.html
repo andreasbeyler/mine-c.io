@@ -653,7 +653,7 @@
                 <canvas class="threat-icon-canvas" id="iconCreeper" width="32" height="32"></canvas>
                 <div class="threat-info">
                     <div class="threat-name">Creeper</div>
-                    <div class="threat-desc">Explosive green terror. Sturdy health pool and melts quickly under continuous laser fire.</div>
+                    <div class="threat-desc">Explosive green terror. Explodes upon defeat, releasing ultra-fast mini-creepers toward the portal!</div>
                     <div class="threat-stats">85 HP • $14 Reward</div>
                 </div>
             </div>
@@ -1529,9 +1529,9 @@
                 updateUpgradePanel();
                 
                 if (wave % 10 === 0) {
-                    enemiesToSpawn = Math.round((9 + (wave * 0.9)) * 2); // Doppelte Gegneranzahl in Boss-Wellen
+                    enemiesToSpawn = Math.round((9 + (wave * 0.9)) * 2); 
                     spawnInterval = 35;
-                    bossesRemainingToSpawn = (wave / 10) * 2; // Doppelte Anzahl Bosse
+                    bossesRemainingToSpawn = (wave / 10) * 2; 
                 } else {
                     enemiesToSpawn = Math.round(3 + (wave * 2.3)); 
                     spawnInterval = Math.max(15, 75 - (wave * 3.5)); 
@@ -1670,11 +1670,11 @@
             if (enemyType === 'pig') primaryColor = '#f48fb1';
             else if (enemyType === 'skeleton') primaryColor = '#dcdcdc';
             else if (enemyType === 'spider') primaryColor = '#212121';
-            else if (enemyType === 'creeper') primaryColor = '#388e3c';
+            else if (enemyType === 'creeper' || enemyType === 'minicreeper') primaryColor = '#388e3c';
             else if (enemyType === 'golem') primaryColor = '#9e9e9e';
             else if (enemyType === 'boss') primaryColor = '#d500f9';
 
-            const count = enemyType === 'boss' ? 28 : 12;
+            const count = enemyType === 'boss' ? 28 : (enemyType === 'minicreeper' ? 6 : 12);
             for (let i = 0; i < count; i++) {
                 gibs.push(new GibParticle(x, y, primaryColor));
             }
@@ -2065,9 +2065,9 @@
         canvas.addEventListener('pointerup', (e) => { if (gameOver) return; if (isDragging) { const c = getGridCoordinates(e); tryPlaceTower(c.gridX, c.gridY); isDragging = false; dragGridX = -1; dragGridY = -1; } });
 
         class Enemy {
-            constructor(startX, startY, type) {
+            constructor(startX, startY, type, forcedNodeIndex = 1) {
                 this.x = startX * tileSize + tileSize / 2; this.y = startY * tileSize + headerHeight + tileSize / 2;
-                this.type = type; this.targetIndex = 1; this.reachedEnd = false; this.currentSlow = 0; this.isLasered = false; this.animTimer = Math.random() * 100;
+                this.type = type; this.targetIndex = forcedNodeIndex; this.reachedEnd = false; this.currentSlow = 0; this.isLasered = false; this.animTimer = Math.random() * 100;
 
                 if (type === 'boss') { 
                     this.name = 'Wither Boss'; 
@@ -2077,6 +2077,13 @@
                     this.size = 42; 
                     this.reward = 250; 
                 } 
+                else if (type === 'minicreeper') {
+                    this.name = 'Mini Creeper';
+                    this.baseSpeed = 3.2 + (wave * 0.08); // Sehr schnell!
+                    this.maxHp = 10 + Math.round(wave * 2);
+                    this.size = 16;
+                    this.reward = 3;
+                }
                 else if (type === 'golem') { this.name = 'Iron Golem'; this.baseSpeed = 0.8 + (wave * 0.015); this.maxHp = 90 + (wave * 35); this.size = 32; this.reward = 15; } 
                 else if (type === 'skeleton') { this.name = 'Skeleton'; this.baseSpeed = 1.2 + (wave * 0.035); this.maxHp = 50 + (wave * 18); this.size = 26; this.reward = 10; }
                 else if (type === 'creeper') { this.name = 'Creeper'; this.baseSpeed = 1.1 + (wave * 0.03); this.maxHp = 75 + (wave * 22); this.size = 28; this.reward = 14; }
@@ -2132,6 +2139,12 @@
                     ctx.fillStyle = '#000000'; ctx.fillRect(-7, -16, 3, 3); ctx.fillStyle = '#000000'; ctx.fillRect(4, -16, 3, 3);
                     ctx.fillStyle = '#000000'; ctx.fillRect(-2, -12, 4, 5); ctx.fillStyle = '#000000'; ctx.fillRect(-6, -7, 3, 4); ctx.fillStyle = '#000000'; ctx.fillRect(3, -7, 3, 4);
                     ctx.fillStyle = '#1b5e20'; ctx.fillRect(-8, 8, 16, 6);
+                } else if (this.type === 'minicreeper') {
+                    ctx.fillStyle = '#2e7d32'; ctx.fillRect(-6, -5, 12, 10);
+                    ctx.shadowColor = 'transparent';
+                    ctx.fillStyle = '#388e3c'; ctx.fillRect(-6, -12, 12, 8);
+                    ctx.fillStyle = '#000000'; ctx.fillRect(-4, -10, 2, 2); ctx.fillStyle = '#000000'; ctx.fillRect(2, -10, 2, 2);
+                    ctx.fillStyle = '#000000'; ctx.fillRect(-1, -7, 2, 3);
                 } else if (this.type === 'spider') {
                     ctx.fillStyle = '#212121'; ctx.fillRect(-10, -6, 20, 12);
                     ctx.shadowColor = 'transparent';
@@ -2361,6 +2374,19 @@
                 if (enemy.hp <= 0) {
                     soundFX.pop(); 
                     spawnGibs(enemy.x, enemy.y, enemy.type);
+                    
+                    // Creeper stirbt -> Explosion & Mini-Creeper spawnen
+                    if (enemy.type === 'creeper') {
+                        explosions.push(new Explosion(enemy.x, enemy.y));
+                        // 2 Mini-Creeper spawnen an gleicher Stelle, setzen den Weg fort
+                        for (let m = 0; m < 2; m++) {
+                            const mini = new Enemy(0, 0, 'minicreeper', enemy.targetIndex);
+                            mini.x = enemy.x + (Math.random() - 0.5) * 10;
+                            mini.y = enemy.y + (Math.random() - 0.5) * 10;
+                            enemies.push(mini);
+                        }
+                    }
+
                     floatingTexts.push(new FloatingText(enemy.x, enemy.y, `+$${enemy.reward}`, '#ffcc00'));
                     coins += enemy.reward; killed++; updateButtonStates(); enemies.splice(i, 1); continue;
                 }
