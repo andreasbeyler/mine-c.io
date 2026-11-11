@@ -2545,8 +2545,17 @@
                         explosions.push(new Explosion(enemy.x, enemy.y));
                         for (let m = 0; m < 2; m++) {
                             const mini = new Enemy(0, 0, 'minicreeper', enemy.targetIndex);
-                            mini.x = enemy.x + (Math.random() - 0.5) * 10;
-                            mini.y = enemy.y + (Math.random() - 0.5) * 10;
+                            
+                            // Versetzt die Mini-Creeper deutlich:
+                            // m === 0 geht nach oben-links (-12, -12)
+                            // m === 1 geht nach unten-rechts (+12, +12)
+                            const baseOffsetX = (m === 0) ? -12 : 12;
+                            const baseOffsetY = (m === 0) ? -12 : 12;
+                            
+                            // Plus ein wenig Zufall, damit es organischer aussieht
+                            mini.x = enemy.x + baseOffsetX + (Math.random() - 0.5) * 8;
+                            mini.y = enemy.y + baseOffsetY + (Math.random() - 0.5) * 8;
+                            
                             enemies.push(mini);
                         }
                     }
