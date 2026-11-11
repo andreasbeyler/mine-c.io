@@ -671,7 +671,7 @@
                 <canvas class="threat-icon-canvas" id="iconGolem" width="32" height="32"></canvas>
                 <div class="threat-info">
                     <div class="threat-name">Iron Golem</div>
-                    <div class="threat-desc">Massive and heavily armored, but slow. Glows red and speeds up nearby enemies by 30% when below 20% HP!</div>
+                    <div class="threat-desc">Massive and heavily armored, but slow. Glows red and speeds up nearby enemies by 30% when below 50% HP!</div>
                     <div class="threat-stats">100 HP • $15 Reward</div>
                 </div>
             </div>
@@ -1022,10 +1022,26 @@
             ctxP.fillStyle = '#c2185b'; ctxP.fillRect(16, 7, 4, 4);
 
             const ctxSkel = setupIconCanvas('iconSkeleton', 32);
-            ctxSkel.fillStyle = '#dcdcdc'; ctxSkel.fillRect(11, 10, 10, 16);
-            ctxSkel.fillStyle = '#e0e0e0'; ctxSkel.fillRect(10, 2, 12, 10);
-            ctxSkel.fillStyle = '#000000'; ctxSkel.fillRect(12, 5, 3, 3); ctxSkel.fillStyle = '#000000'; ctxSkel.fillRect(17, 5, 3, 3);
-            ctxSkel.fillStyle = '#a9a9a9'; ctxSkel.fillRect(13, 26, 6, 6);
+            // Schädel
+            ctxSkel.fillStyle = '#e0e0e0'; ctxSkel.fillRect(9, 2, 14, 12);
+            ctxSkel.fillStyle = '#111111'; // Dunkle Höhlen
+            ctxSkel.fillRect(11, 5, 3, 3); // Linkes Auge
+            ctxSkel.fillRect(18, 5, 3, 3); // Rechtes Auge
+            ctxSkel.fillRect(14, 9, 4, 3); // Nase/Mund
+            // Knochenkörper (Wirbelsäule)
+            ctxSkel.fillStyle = '#dcdcdc'; ctxSkel.fillRect(12, 14, 8, 12);
+            // Rippen (Dunkle Aussparungen)
+            ctxSkel.fillStyle = '#222222'; 
+            ctxSkel.fillRect(12, 17, 8, 2); 
+            ctxSkel.fillRect(12, 21, 8, 2);
+            // Dünne Knochenarme
+            ctxSkel.fillStyle = '#dcdcdc'; 
+            ctxSkel.fillRect(7, 14, 4, 10); 
+            ctxSkel.fillRect(21, 14, 4, 10);
+            // Dünne Knochenbeine
+            ctxSkel.fillStyle = '#c0c0c0'; 
+            ctxSkel.fillRect(12, 26, 3, 6); 
+            ctxSkel.fillRect(17, 26, 3, 6);
 
             const ctxCreeper = setupIconCanvas('iconCreeper', 32);
             ctxCreeper.fillStyle = '#2e7d32'; ctxCreeper.fillRect(8, 10, 16, 16);
@@ -2146,7 +2162,7 @@
                 ctx.shadowBlur = 6;
                 ctx.shadowOffsetY = 4;
 
-                const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.2);
+                const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.5); // Jetzt 50%
 
                 if (this.type === 'pig') {
                     ctx.fillStyle = '#f48fb1'; ctx.fillRect(-10, -8, 20, 16);
@@ -2155,11 +2171,32 @@
                     ctx.fillStyle = '#fce4ec'; ctx.fillRect(10, -2, 4, 4);
                     ctx.fillStyle = '#c2185b'; ctx.fillRect(2, -10, 4, 4); ctx.fillRect(2, 6, 4, 4);
                 } else if (this.type === 'skeleton') {
-                    ctx.fillStyle = '#dcdcdc'; ctx.fillRect(-6, -6, 12, 14);
+                    // Schädel
+                    ctx.fillStyle = '#e0e0e0'; ctx.fillRect(-7, -18, 14, 12);
                     ctx.shadowColor = 'transparent';
-                    ctx.fillStyle = '#e0e0e0'; ctx.fillRect(-8, -18, 16, 12);
-                    ctx.fillStyle = '#000000'; ctx.fillRect(-5, -14, 3, 3); ctx.fillStyle = '#000000'; ctx.fillRect(17, -14, 3, 3);
-                    ctx.fillStyle = '#a9a9a9'; ctx.fillRect(-4, 8, 8, 8);
+                    // Augenhöhlen und Nasen-/Mundpartie
+                    ctx.fillStyle = '#111111'; 
+                    ctx.fillRect(-5, -15, 3, 3); // Linkes Auge
+                    ctx.fillRect(2, -15, 3, 3);  // Rechtes Auge (korrigiert)
+                    ctx.fillRect(-2, -11, 4, 3); // Nase/Mund
+                    
+                    // Brustkorb (Wirbelsäule)
+                    ctx.fillStyle = '#dcdcdc'; ctx.fillRect(-4, -6, 8, 14);
+                    // Rippen-Zwischenräume (für den Knochen-Look)
+                    ctx.fillStyle = '#222222'; 
+                    ctx.fillRect(-4, -3, 8, 2); 
+                    ctx.fillRect(-4, 1, 8, 2);
+                    ctx.fillRect(-4, 5, 8, 2);
+                    
+                    // Dünne Knochenarme
+                    ctx.fillStyle = '#dcdcdc'; 
+                    ctx.fillRect(-9, -6, 4, 12); 
+                    ctx.fillRect(5, -6, 4, 12);
+                    
+                    // Dünne Knochenbeine
+                    ctx.fillStyle = '#a9a9a9'; 
+                    ctx.fillRect(-4, 8, 3, 8); 
+                    ctx.fillRect(1, 8, 3, 8);
                 } else if (this.type === 'creeper') {
                     ctx.fillStyle = '#2e7d32'; ctx.fillRect(-10, -8, 20, 16);
                     ctx.shadowColor = 'transparent';
@@ -2208,14 +2245,23 @@
 
                 if (isGolemRaging) {
                     ctx.save();
-                    const auraPulse = 18 + Math.sin(Date.now() * 0.02) * 5;
-                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+                    // 2.5 * tileSize (40) = 100 Pixel Radius
+                    const buffRadius = 100; 
+                    const auraPulse = buffRadius + Math.sin(Date.now() * 0.015) * 4; // Leichtes Pulsieren
+                    
+                    // Leicht rote Fläche innerhalb des Radius
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, auraPulse, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Roter Rand, der den Radius klar abgrenzt
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
                     ctx.lineWidth = 2;
                     ctx.shadowColor = '#ff0000';
                     ctx.shadowBlur = 12;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, auraPulse, 0, Math.PI * 2);
                     ctx.stroke();
+                    
                     ctx.restore();
                 }
 
@@ -2487,7 +2533,7 @@
             const golems = enemies.filter(e => e.type === 'golem');
 
             for (let golem of golems) {
-                if (golem.hp <= golem.maxHp * 0.2) {
+                if (golem.hp <= golem.maxHp * 0.5) { // Jetzt bei 50% HP
                     for (let other of enemies) {
                         const dist = Math.hypot(other.x - golem.x, other.y - golem.y);
                         if (dist <= golemBuffRadius) {
