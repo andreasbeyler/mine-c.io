@@ -2220,7 +2220,7 @@
         }
 
         function drawGrass(px, py, x, y) {
-            // Grundlegendes Gras-Muster
+            // Grundlegendes Gras-Muster (Schachbrett-Optik)
             ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; 
             ctx.fillRect(px, py, tileSize, tileSize);
             
@@ -2234,29 +2234,47 @@
                 ctx.fillRect(bx, by, 3, 5); 
             }
 
-            // --- NEU: Deko-Elemente im Minecraft-Style (Zufällig basierend auf Koordinaten) ---
+            // --- ZUFÄLLIGE DEKO IM MINECRAFT-STYLE ---
             const decoRand = (x * 73 + y * 137) % 100;
 
-            if (decoRand < 8) {
-                // Kleiner grauer Stein (Cobblestone-Style)
+            if (decoRand < 6) {
+                // 1. Kleiner Stein / Cobblestone
                 ctx.fillStyle = '#555555';
-                ctx.fillRect(px + 12, py + 14, 8, 8);
+                ctx.fillRect(px + 12, py + 14, 10, 10);
                 ctx.fillStyle = '#777777';
-                ctx.fillRect(px + 14, py + 16, 4, 4);
-            } else if (decoRand >= 8 && decoRand < 14) {
-                // Kleiner Busch / Blätterblock
+                ctx.fillRect(px + 14, py + 16, 5, 5);
+                ctx.fillStyle = '#333333';
+                ctx.fillRect(px + 13, py + 21, 3, 3);
+            } else if (decoRand >= 6 && decoRand < 11) {
+                // 2. Kleiner Busch / Blätterblock
                 ctx.fillStyle = '#1b5e20';
-                ctx.fillRect(px + 10, py + 10, 16, 16);
+                ctx.fillRect(px + 8, py + 8, 24, 24);
                 ctx.fillStyle = '#2e7d32';
-                ctx.fillRect(px + 12, py + 12, 12, 12);
-            } else if (decoRand >= 14 && decoRand < 18) {
-                // Rote Blume (Poppy-Style)
+                ctx.fillRect(px + 10, py + 10, 20, 20);
+                ctx.fillStyle = '#388e3c';
+                ctx.fillRect(px + 14, py + 14, 8, 8);
+            } else if (decoRand >= 11 && decoRand < 15) {
+                // 3. Rote Blume (Poppy)
                 ctx.fillStyle = '#2e7d32'; // Stängel
-                ctx.fillRect(px + 18, py + 18, 4, 10);
-                ctx.fillStyle = '#f44336'; // Blütenkopf
+                ctx.fillRect(px + 18, py + 20, 4, 10);
+                ctx.fillStyle = '#d32f2f'; // Blütenkopf
                 ctx.fillRect(px + 14, py + 14, 12, 8);
                 ctx.fillStyle = '#ffeb3b'; // Zentrum
                 ctx.fillRect(px + 18, py + 16, 4, 4);
+            } else if (decoRand >= 15 && decoRand < 18) {
+                // 4. Mini-Baum (Eichen-Style)
+                // Stamm
+                ctx.fillStyle = '#5d4037';
+                ctx.fillRect(px + 16, py + 20, 8, 14);
+                ctx.fillStyle = '#4e342e';
+                ctx.fillRect(px + 20, py + 20, 4, 14);
+                // Krone
+                ctx.fillStyle = '#1b5e20';
+                ctx.fillRect(px + 8, py + 6, 24, 16);
+                ctx.fillStyle = '#2e7d32';
+                ctx.fillRect(px + 10, py + 4, 20, 16);
+                ctx.fillStyle = '#388e3c';
+                ctx.fillRect(px + 14, py + 6, 8, 8);
             }
         }
 
