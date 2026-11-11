@@ -155,6 +155,7 @@
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
             position: relative;
             z-index: 30;
+            pointer-events: auto;
         }
 
         #playBtn:hover {
@@ -618,7 +619,7 @@
             </div>
         </div>
 
-        <!-- Leaderboard wiederhergestellt -->
+        <!-- Leaderboard -->
         <div class="section-container">
             <div class="section-title">LEADERBOARD</div>
             <div id="leaderboardList"></div>
@@ -838,7 +839,6 @@
         }
 
         async function checkInitialAuth() {
-            // 1. Priorisierter Hash-Check für Password-Reset
             const hash = window.location.hash;
             if (hash && hash.includes('type=recovery')) {
                 authSection.style.display = 'none';
@@ -847,7 +847,6 @@
                 return;
             }
 
-            // 2. Normaler Session-Check
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session && session.user && resetPasswordSection.style.display !== 'flex') {
                 const uname = await fetchUserProfile(session.user.id);
@@ -856,7 +855,6 @@
         }
         checkInitialAuth();
 
-        // Supabase-Event abfangen, falls das Event oder der Hash verzögert eintreffen
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'PASSWORD_RECOVERY' || (window.location.hash && window.location.hash.includes('type=recovery'))) {
                 authSection.style.display = 'none';
@@ -865,7 +863,6 @@
             }
         });
 
-        // Neues Passwort speichern
         saveNewPasswordBtn.addEventListener('click', async () => {
             soundFX.click();
             resetMsg.innerText = '';
@@ -1245,6 +1242,8 @@
             if (!error && data) {
                 leaderboardData = data;
                 updateLeaderboardUI();
+            } else {
+                console.error("Leaderboard konnte nicht geladen werden:", error);
             }
         }
 
@@ -1355,7 +1354,7 @@
             gameWrapper.style.display = 'none';
             
             startScreen.style.display = 'flex';
-            playBtn.style.display = 'none';
+            playBtn.style.display = 'block';
             newScoreSection.style.display = 'flex';
             
             document.getElementById('nsKilled').innerText = pendingScore;
