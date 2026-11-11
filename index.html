@@ -1529,9 +1529,9 @@
                 updateUpgradePanel();
                 
                 if (wave % 10 === 0) {
-                    enemiesToSpawn = Math.round(9 + (wave * 0.9)); 
+                    enemiesToSpawn = Math.round((9 + (wave * 0.9)) * 2); // Doppelte Gegneranzahl in Boss-Wellen
                     spawnInterval = 35;
-                    bossesRemainingToSpawn = wave / 10;
+                    bossesRemainingToSpawn = (wave / 10) * 2; // Doppelte Anzahl Bosse
                 } else {
                     enemiesToSpawn = Math.round(3 + (wave * 2.3)); 
                     spawnInterval = Math.max(15, 75 - (wave * 3.5)); 
@@ -1540,7 +1540,7 @@
 
                 startWaveBtn.disabled = true;
                 if (wave % 10 === 0) {
-                    startWaveBtn.innerText = `⚠️ Wave ${wave} (${wave/10} Boss${wave/10 > 1 ? 'e' : ''}) running...`;
+                    startWaveBtn.innerText = `⚠️ Wave ${wave} (${bossesRemainingToSpawn} Boss${bossesRemainingToSpawn > 1 ? 'e' : ''}) running...`;
                 } else {
                     startWaveBtn.innerText = `Wave ${wave} running...`;
                 }
@@ -1704,7 +1704,6 @@
                 this.slowCrystalAngle = 0; 
                 this.hasSlowTarget = false; 
 
-                // Laser genervt: Reichweite 1 Grid-Block weniger (von 110 auf 70 -> Einheit ist 40, also 110-40=70 wäre zu krass, im Code war Reichweite 110, reduziere um 40 auf 70? Nein, ein Gridblock ist 40px, aber wir wollen "einen Gridblock" von der Range-Zahl abziehen oder ca 40px weniger? Lassen wir von 110 auf 70 fallen oder 110 auf 70. Warten Sie, im Code war Range 110. Ein Tile ist 40. Reduzieren um einen Gridblock bedeutet -40 im Radius oder -1 Grid-Schritt. Nehmen wir baseRange = 70 für den Laser (vorher 110). Schaden reduziert: baseMinDamage 0.3 (vorher 0.4), baseMaxDamage 2.0 (vorher 2.5). Kosten hoch auf 105 (vorher 90).
                 if (type === 'fire') { this.baseRange = 100; this.baseDamage = 65; this.cooldownMax = 80; this.cost = 120; } 
                 else if (type === 'laser') { this.baseRange = 70; this.baseMinDamage = 0.3; this.baseMaxDamage = 2.0; this.baseDamage = 0.3; this.cost = 105; } 
                 else if (type === 'slow') { this.baseRange = 100; this.baseDamage = 2; this.cooldownMax = 40; this.cost = 70; } 
@@ -1788,7 +1787,7 @@
                             const laserMultiplier = (this.currentLaserTarget.type === 'skeleton' || this.currentLaserTarget.type === 'creeper') ? 1.6 : 1.0;
                             let dmgDealt = this.damage * laserMultiplier;
                             if (this.currentLaserTarget.type === 'boss') {
-                                dmgDealt *= 0.6; // Reduzierter Schaden am Boss
+                                dmgDealt *= 0.6; 
                             }
                             this.currentLaserTarget.hp -= dmgDealt;
                             this.currentLaserTarget.isLasered = true;
@@ -1950,7 +1949,7 @@
                 if (dist <= this.speed) {
                     let finalDmg = this.damage;
                     if (this.target.type === 'boss') {
-                        finalDmg *= 0.6; // Reduzierter Projektil-Schaden am Boss
+                        finalDmg *= 0.6; 
                     }
 
                     this.target.hp -= finalDmg;
@@ -2195,7 +2194,6 @@
             const rand = Math.random(); 
             let type = 'zombie';
             
-            // Mehr schnelle Einheiten (Spinnen, Schweine) beigemischt
             if (rand < 0.25) {
                 type = 'spider';
             } else if (rand < 0.45) {
@@ -2302,7 +2300,7 @@
                 ctx.fillStyle = '#000000'; ctx.fillRect(0, GAME_HEIGHT / 2 - 52, GAME_WIDTH, 4); ctx.fillRect(0, GAME_HEIGHT / 2 + 48, GAME_WIDTH, 4);
                 ctx.font = 'bold 28px monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 ctx.shadowColor = '#ff0000'; ctx.shadowBlur = 15; ctx.fillStyle = '#ffffff';
-                ctx.fillText(`⚠️ ${wave/10 > 1 ? wave/10 + ' ' : ''}BOSS${wave/10 > 1 ? 'ES' : ''} INCOMING! ⚠️`, GAME_WIDTH / 2, GAME_HEIGHT / 2);
+                ctx.fillText(`⚠️ BOSS WAVE INCOMING! ⚠️`, GAME_WIDTH / 2, GAME_HEIGHT / 2);
                 ctx.restore();
             }
         }
@@ -2335,7 +2333,7 @@
                     if (normalEnemiesCount <= 10) {
                         bossSpawnTimer++;
                         if (bossSpawnTimer >= 50) {
-                            if (bossesRemainingToSpawn === Math.floor(wave / 10)) {
+                            if (bossesRemainingToSpawn === Math.floor(wave / 10) * 2) {
                                 bossWarningTimer = 120; 
                             }
                             enemies.push(new Enemy(pathNodes[0].x, pathNodes[0].y, 'boss'));
