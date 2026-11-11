@@ -681,7 +681,7 @@
                 <div class="threat-info">
                     <div class="threat-name">Wither Boss</div>
                     <div class="threat-desc">The ultimate armored menace appearing every 10 waves. Immense health pool and damage reduction.</div>
-                    <div class="threat-stats">5700 HP • Heavy Armor • $250 Reward</div>
+                    <div class="threat-stats">7125 HP • Heavy Armor • $250 Reward</div>
                 </div>
             </div>
         </div>
@@ -1787,7 +1787,7 @@
                             const laserMultiplier = (this.currentLaserTarget.type === 'skeleton' || this.currentLaserTarget.type === 'creeper') ? 1.6 : 1.0;
                             let dmgDealt = this.damage * laserMultiplier;
                             if (this.currentLaserTarget.type === 'boss') {
-                                dmgDealt *= 0.65;
+                                dmgDealt *= 0.6; // Reduzierter Schaden am Boss
                             }
                             this.currentLaserTarget.hp -= dmgDealt;
                             this.currentLaserTarget.isLasered = true;
@@ -1949,7 +1949,7 @@
                 if (dist <= this.speed) {
                     let finalDmg = this.damage;
                     if (this.target.type === 'boss') {
-                        finalDmg *= 0.65;
+                        finalDmg *= 0.6; // Reduzierter Projektil-Schaden am Boss
                     }
 
                     this.target.hp -= finalDmg;
@@ -2073,7 +2073,7 @@
                     this.name = 'Wither Boss'; 
                     this.baseSpeed = 0.5; 
                     const bm = 1 + ((wave - 10) / 10) * 0.6; 
-                    this.maxHp = Math.round(5700 * Math.max(1, bm)); 
+                    this.maxHp = Math.round(7125 * Math.max(1, bm)); // 7125 HP (~25% stärker)
                     this.size = 42; 
                     this.reward = 250; 
                 } 
