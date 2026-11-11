@@ -36,6 +36,8 @@
             padding: 40px 20px 40px 20px;
             box-sizing: border-box;
             background-color: #0a0a0a;
+            position: relative;
+            z-index: 20;
         }
 
         .header-section {
@@ -151,6 +153,8 @@
             margin-bottom: 40px;
             transition: all 0.2s ease;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+            position: relative;
+            z-index: 30;
         }
 
         #playBtn:hover {
@@ -614,6 +618,7 @@
             </div>
         </div>
 
+        <!-- Leaderboard wiederhergestellt -->
         <div class="section-container">
             <div class="section-title">LEADERBOARD</div>
             <div id="leaderboardList"></div>
@@ -2113,7 +2118,6 @@
             draw(ctx) {
                 const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.2);
 
-                // Sichtbarer roter Radius von 1,5 Grid-Blöcken (1.5 * 40 = 60 Pixel) um den Golem, wenn er rage/glüht
                 if (isGolemRaging) {
                     ctx.save();
                     const radiusPx = 1.5 * tileSize;
@@ -2381,7 +2385,6 @@
                 enemy.speedBoost = 0;
             }
 
-            // Golem Buff-Radius auf 1,5 Grid-Blöcke (1.5 * 40 = 60 Pixel) angepasst
             const golemBuffRadius = 1.5 * tileSize;
             const golems = enemies.filter(e => e.type === 'golem');
 
