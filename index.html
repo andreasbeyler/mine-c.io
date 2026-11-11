@@ -833,6 +833,16 @@
         }
 
         async function checkInitialAuth() {
+            // 1. Priorisierter Hash-Check für Password-Reset
+            const hash = window.location.hash;
+            if (hash && hash.includes('type=recovery')) {
+                authSection.style.display = 'none';
+                userStatusRow.style.display = 'none';
+                resetPasswordSection.style.display = 'flex';
+                return;
+            }
+
+            // 2. Normaler Session-Check
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session && session.user && resetPasswordSection.style.display !== 'flex') {
                 const uname = await fetchUserProfile(session.user.id);
@@ -841,9 +851,9 @@
         }
         checkInitialAuth();
 
-        // Supabase-Event abfangen für Recovery-Link aus der E-Mail
+        // Supabase-Event abfangen, falls das Event oder der Hash verzögert eintreffen
         supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'PASSWORD_RECOVERY') {
+            if (event === 'PASSWORD_RECOVERY' || (window.location.hash && window.location.hash.includes('type=recovery'))) {
                 authSection.style.display = 'none';
                 userStatusRow.style.display = 'none';
                 resetPasswordSection.style.display = 'flex';
@@ -869,6 +879,10 @@
             } else {
                 resetMsg.style.color = '#00ff00';
                 resetMsg.innerText = 'Passwort erfolgreich geändert!';
+                
+                // Hash aus der URL entfernen, damit bei einem Seiten-Reload nicht wieder die Reset-Maske kommt
+                window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+
                 setTimeout(async () => {
                     resetPasswordSection.style.display = 'none';
                     const { data: { session } } = await supabaseClient.auth.getSession();
