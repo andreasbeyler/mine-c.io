@@ -2225,37 +2225,6 @@
                 const by = py + ((seed * (i+2) * 11) % (tileSize - 8)) + 4;
                 ctx.fillRect(bx, by, 2, 6); 
             }
-
-            const decoRand = (x * 73 + y * 137) % 100;
-
-            if (decoRand < 7) {
-                ctx.fillStyle = '#1a1a1a'; ctx.fillRect(px + 4, py + 4, 32, 32);
-                ctx.fillStyle = '#424242'; ctx.fillRect(px + 6, py + 6, 28, 28);
-                ctx.fillStyle = '#616161'; ctx.fillRect(px + 8, py + 8, 16, 16);
-                ctx.fillStyle = '#9e9e9e'; ctx.fillRect(px + 10, py + 10, 8, 8);
-                ctx.fillStyle = '#212121'; ctx.fillRect(px + 20, py + 20, 10, 10);
-            } 
-            else if (decoRand >= 7 && decoRand < 15) {
-                ctx.fillStyle = '#01579b'; ctx.fillRect(px + 2, py + 2, 36, 36); 
-                ctx.fillStyle = '#0288d1'; ctx.fillRect(px + 4, py + 4, 32, 32); 
-                const time = Date.now() * 0.004;
-                const waveOffset = Math.sin(time + x) * 4;
-                ctx.fillStyle = '#4fc3f7'; 
-                ctx.fillRect(px + 8 + waveOffset, py + 12, 12, 5);
-            } 
-            else if (decoRand >= 15 && decoRand < 22) {
-                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 18, py + 22, 4, 12); 
-                ctx.fillStyle = '#b71c1c'; ctx.fillRect(px + 12, py + 10, 16, 12);
-                ctx.fillStyle = '#f44336'; ctx.fillRect(px + 14, py + 12, 12, 8);
-                ctx.fillStyle = '#ffcdd2'; ctx.fillRect(px + 16, py + 14, 4, 4);  
-            } 
-            else if (decoRand >= 22 && decoRand < 30) {
-                ctx.fillStyle = '#271c19'; ctx.fillRect(px + 14, py + 16, 12, 22); 
-                ctx.fillStyle = '#4e342e'; ctx.fillRect(px + 16, py + 16, 8, 22);
-                ctx.fillStyle = '#0d280d'; ctx.fillRect(px + 2, py + 2, 36, 20);
-                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 4, py + 4, 32, 16);
-                ctx.fillStyle = '#2e7d32'; ctx.fillRect(px + 8, py + 6, 24, 10);
-            }
         }
 
         function drawStonePath(px, py) {
