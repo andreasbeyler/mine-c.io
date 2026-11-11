@@ -2722,11 +2722,12 @@
                 drawRangeCircle(cx, cy, selectedTower.range, color);
             }
 
-            // --- ANGEPASSTE PRÜFUNG: NICHT AUF DEM PFAD BAUEN ---
-            if (isDragging && dragGridX >= 0 && dragGridX < cols && dragGridY >= 0 && dragGridY < rows && grid[dragGridY][dragGridX] !== 1) {
+            // --- ANGEPASSTE PRÜFUNG: NICHT AUF DEM PFAD UND KEIN TURM VORHANDEN ---
+            const targetHasTower = towers.some(t => t.x === dragGridX && t.y === dragGridY);
+            if (isDragging && dragGridX >= 0 && dragGridX < cols && dragGridY >= 0 && dragGridY < rows && grid[dragGridY][dragGridX] !== 1 && !targetHasTower) {
                 const cx = dragGridX * tileSize + tileSize / 2; const cy = dragGridY * tileSize + headerHeight + tileSize / 2;
                 let previewRange = 95; let previewColor = 'rgba(255, 204, 0, 0.25)';
-                if (selectedTowerType === 'laser') { previewRange = 70; previewColor = 'rgba(0, 255, 255, 0.25)'; } 
+                if (selectedTowerType === 'laser') { previewRange = 110; previewColor = 'rgba(0, 255, 255, 0.25)'; } // Hier direkt auf 110 angepasst
                 else if (selectedTowerType === 'slow') { previewRange = 100; previewColor = 'rgba(144, 202, 249, 0.25)'; } 
                 else if (selectedTowerType === 'fire') { previewRange = 100; previewColor = 'rgba(255, 87, 34, 0.25)'; }
                 drawRangeCircle(cx, cy, previewRange, previewColor);
