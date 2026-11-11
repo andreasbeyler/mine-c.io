@@ -1071,7 +1071,7 @@
             sCtx.fillStyle = '#90caf9';
             sCtx.beginPath(); sCtx.moveTo(10, 5); sCtx.lineTo(15, 10); sCtx.lineTo(10, 15); sCtx.lineTo(5, 10); sCtx.closePath(); sCtx.fill();
 
-            const lCtx = setupIconCanvas('iconLaser', 20);
+            const lCtx = setupIconCanvas('btnIconLaser', 20);
             lCtx.fillStyle = '#006064'; lCtx.fillRect(2, 2, 16, 16);
             lCtx.fillStyle = '#00bcd4'; lCtx.fillRect(4, 4, 12, 12);
             lCtx.fillStyle = '#ffffff'; lCtx.fillRect(6, 8, 8, 4);
@@ -2094,6 +2094,7 @@
             }
 
             update() {
+                // Effektives Tempo berechnen (Basis + Golem-Buff - Verlangsamung)
                 let netSpeed = (this.baseSpeed * (1 + this.speedBoost)) * (1 - this.currentSlow);
                 
                 this.animTimer += netSpeed;
@@ -2180,6 +2181,7 @@
 
                 ctx.restore();
 
+                // Golem Raging Aura Effekt (Rotes Leuchten um den Golem bei <= 20% HP)
                 if (isGolemRaging) {
                     ctx.save();
                     const auraPulse = 18 + Math.sin(Date.now() * 0.02) * 5;
@@ -2245,30 +2247,13 @@
             ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; 
             ctx.fillRect(px, py, tileSize, tileSize);
             
-            // Wiederhergestellte Deko (Bäumchen/Steine/Grashalme)
-            const seed = (x * 37 + y * 17) % 100;
-            if (seed < 12) {
-                // Kleiner Stein / Kiesel
-                ctx.fillStyle = '#757575';
-                ctx.fillRect(px + 8, py + 22, 10, 6);
-                ctx.fillStyle = '#9e9e9e';
-                ctx.fillRect(px + 10, py + 20, 6, 4);
-            } else if (seed < 22) {
-                // Kleines Büschchen / Bäumchen
-                ctx.fillStyle = '#1b5e20';
-                ctx.fillRect(px + 12, py + 12, 14, 14);
-                ctx.fillStyle = '#2e7d32';
-                ctx.fillRect(px + 14, py + 10, 10, 10);
-            } else {
-                // Klassische Grashalme
-                const bladeSeed = x * 13 + y * 31; 
-                const numBlades = (bladeSeed % 2) + 1; 
-                ctx.fillStyle = (x + y) % 2 === 0 ? '#2E6930' : '#275B28';
-                for(let i = 0; i < numBlades; i++) {
-                    const bx = px + ((bladeSeed * (i+1) * 7) % (tileSize - 8)) + 4;
-                    const by = py + ((bladeSeed * (i+2) * 11) % (tileSize - 8)) + 4;
-                    ctx.fillRect(bx, by, 2, 6); 
-                }
+            const seed = x * 13 + y * 31; 
+            const numBlades = (seed % 2) + 1; 
+            ctx.fillStyle = (x + y) % 2 === 0 ? '#2E6930' : '#275B28';
+            for(let i = 0; i < numBlades; i++) {
+                const bx = px + ((seed * (i+1) * 7) % (tileSize - 8)) + 4;
+                const by = py + ((seed * (i+2) * 11) % (tileSize - 8)) + 4;
+                ctx.fillRect(bx, by, 2, 6); 
             }
         }
 
@@ -2361,19 +2346,23 @@
         function updateLogic() {
             if (gameOver) return;
             
+            // 1. Alle Buffs und Slows vor dem Update zurücksetzen
             for (let enemy of enemies) {
                 enemy.currentSlow = 0;
                 enemy.speedBoost = 0;
             }
 
+            // 2. Golem Aura-Logik auswerten (2,5 Grid-Blöcke = 2.5 * 40 = 100 Pixel Radius)
             const golemBuffRadius = 2.5 * tileSize;
             const golems = enemies.filter(e => e.type === 'golem');
 
             for (let golem of golems) {
+                // Wenn Golem unter oder gleich 20% HP hat
                 if (golem.hp <= golem.maxHp * 0.2) {
                     for (let other of enemies) {
                         const dist = Math.hypot(other.x - golem.x, other.y - golem.y);
                         if (dist <= golemBuffRadius) {
+                            // 30% Tempo-Erhöhung für alle Einheiten im Umkreis
                             other.speedBoost = Math.max(other.speedBoost, 0.30);
                         }
                     }
