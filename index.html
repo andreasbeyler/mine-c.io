@@ -1301,7 +1301,7 @@
                             })
                             .eq('id', currentUser.id)
                             .select(); 
-                        
+                    
                         if (updateError) throw updateError;
                         if (!updateData || updateData.length === 0) {
                             throw new Error("Update blockiert!");
@@ -1316,7 +1316,7 @@
                                 score: pendingScore,
                                 updated_at: new Date().toISOString()
                             });
-                        
+                    
                         if (insertError) throw insertError;
                     }
                 }
@@ -1424,9 +1424,9 @@
         let explosions = [];
         let gibs = [];
         let floatingTexts = [];
-        let wave = 0;          
-        let coins = 150;       
-        let killed = 0;        
+        let wave = 0;  
+        let coins = 150;     
+        let killed = 0;      
         let portalStatus = 'ON'; 
         let gameOver = false;
         let enemiesToSpawn = 0;
@@ -1443,6 +1443,26 @@
         let dragGridX = -1;
         let dragGridY = -1;
 
+        // --- ANGEPASSTE FUNKTION FÜR VEGETATION ---
+        function generateVegetation() {
+            for (let y = 0; y < rows; y++) {
+                for (let x = 0; x < cols; x++) {
+                    // 0 = Gras (bebaubar). Nur Felder bepflanzen, die kein Pfad (1) sind.
+                    if (grid[y][x] === 0) {
+                        const rand = Math.random();
+                        // Wahrscheinlichkeiten: 10% Baum (2), 15% Strauch (3), 20% Blume (4)
+                        if (rand < 0.10) {
+                            grid[y][x] = 2;
+                        } else if (rand < 0.25) {
+                            grid[y][x] = 3;
+                        } else if (rand < 0.45) {
+                            grid[y][x] = 4;
+                        }
+                    }
+                }
+            }
+        }
+
         function generateMap() {
             const randomMapIndex = Math.floor(Math.random() * mapLayouts.length);
             const newNodes = mapLayouts[randomMapIndex];
@@ -1455,7 +1475,7 @@
             }
 
             let current = pathNodes[0];
-            grid[current.y][current.x] = 1;
+            grid[current.y][current.x] = 1; // 1 = Pfad
             for (let i = 1; i < pathNodes.length; i++) {
                 const next = pathNodes[i];
                 if (current.y === next.y) {
@@ -1468,6 +1488,9 @@
                 grid[next.y][next.x] = 1;
                 current = next;
             }
+            
+            // Verteile Vegetation auf der Wiese
+            generateVegetation();
         }
         generateMap();
 
@@ -2043,7 +2066,7 @@
                     soundFX.click();
                     selectedTower = (selectedTower === existingTower) ? null : existingTower;
                     updateUpgradePanel();
-                } else if (grid[gridY][gridX] === 0) {
+                } else if (grid[gridY][gridX] !== 1) { // NICHT auf dem Pfad bauen (Vegetation darf überbaut werden)
                     let cost = 50;
                     if (selectedTowerType === 'laser') cost = 105;
                     if (selectedTowerType === 'slow') cost = 70;
@@ -2053,6 +2076,8 @@
                         soundFX.place();
                         towers.push(new Tower(gridX, gridY, selectedTowerType));
                         coins -= cost; selectedTower = null; updateUpgradePanel();
+                        // Optional: Das Feld wieder auf reines Gras setzen, damit der Baum beim Verkaufen des Turms weg ist.
+                        grid[gridY][gridX] = 0; 
                     }
                 } else {
                     selectedTower = null; updateUpgradePanel();
@@ -2060,6 +2085,7 @@
             }
         }
 
+        // --- ANGEPASSTE ÜBERPRÜFUNG BEIM ZIEHEN ---
         canvas.addEventListener('pointerdown', (e) => { if (gameOver) return; isDragging = true; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
         canvas.addEventListener('pointermove', (e) => { if (!isDragging || gameOver) return; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
         canvas.addEventListener('pointerup', (e) => { if (gameOver) return; if (isDragging) { const c = getGridCoordinates(e); tryPlaceTower(c.gridX, c.gridY); isDragging = false; dragGridX = -1; dragGridY = -1; } });
@@ -2094,7 +2120,6 @@
             }
 
             update() {
-                // Effektives Tempo berechnen (Basis + Golem-Buff - Verlangsamung)
                 let netSpeed = (this.baseSpeed * (1 + this.speedBoost)) * (1 - this.currentSlow);
                 
                 this.animTimer += netSpeed;
@@ -2181,7 +2206,6 @@
 
                 ctx.restore();
 
-                // Golem Raging Aura Effekt (Rotes Leuchten um den Golem bei <= 20% HP)
                 if (isGolemRaging) {
                     ctx.save();
                     const auraPulse = 18 + Math.sin(Date.now() * 0.02) * 5;
@@ -2243,6 +2267,105 @@
             enemies.push(new Enemy(pathNodes[0].x, pathNodes[0].y, type));
         }
 
+        // --- ZEICHEN-FUNKTIONEN FÜR VEGETATION (Verbessert) ---
+        function drawTree(px, py) {
+            // Stamm (mit leichtem Schatten links)
+            ctx.fillStyle = '#4E342E'; ctx.fillRect(px + 16, py + 22, 8, 14);
+            ctx.fillStyle = '#3E2723'; ctx.fillRect(px + 16, py + 22, 3, 14); 
+
+            // Baumkrone Schatten / Basis
+            ctx.fillStyle = '#1B5E20'; 
+            ctx.fillRect(px + 6, py + 6, 28, 16); 
+            ctx.fillRect(px + 10, py + 2, 20, 22);
+
+            // Baumkrone Hauptfarbe
+            ctx.fillStyle = '#2E7D32'; 
+            ctx.fillRect(px + 8, py + 8, 24, 12); 
+            ctx.fillRect(px + 12, py + 4, 16, 18);
+
+            // Baumkrone Highlights (für mehr Tiefe)
+            ctx.fillStyle = '#43A047'; 
+            ctx.fillRect(px + 10, py + 6, 8, 4); 
+            ctx.fillRect(px + 14, py + 4, 4, 2);
+            ctx.fillRect(px + 24, py + 10, 4, 4);
+        }
+
+        function drawBush(px, py) {
+            // Busch Schatten / Äußerer Bereich für mehr Volumen
+            ctx.fillStyle = '#1B5E20'; 
+            ctx.fillRect(px + 8, py + 14, 24, 20); 
+            ctx.fillRect(px + 4, py + 20, 32, 12); 
+            ctx.fillRect(px + 12, py + 12, 16, 4);
+
+            // Busch Hauptfarbe (Blätterwerk)
+            ctx.fillStyle = '#2E7D32'; 
+            ctx.fillRect(px + 10, py + 16, 20, 16); 
+            ctx.fillRect(px + 6, py + 22, 28, 8);
+            ctx.fillRect(px + 14, py + 14, 12, 4);
+
+            // Busch Highlights (für Textur und Fluffigkeit)
+            ctx.fillStyle = '#43A047'; 
+            ctx.fillRect(px + 14, py + 14, 6, 2);
+            ctx.fillRect(px + 10, py + 18, 4, 4);
+            ctx.fillRect(px + 24, py + 22, 6, 2);
+            ctx.fillRect(px + 8, py + 24, 2, 2);
+
+            // Lila Früchte/Beeren (Dunkle Basis)
+            ctx.fillStyle = '#6A1B9A'; 
+            ctx.fillRect(px + 10, py + 24, 4, 4); // Beere links
+            ctx.fillRect(px + 24, py + 16, 4, 4); // Beere rechts oben
+            ctx.fillRect(px + 18, py + 26, 4, 4); // Beere unten mitte
+
+            // Lila Früchte/Beeren (Heller Glanzpunkt für Tiefe)
+            ctx.fillStyle = '#E040FB'; 
+            ctx.fillRect(px + 10, py + 24, 2, 2); 
+            ctx.fillRect(px + 24, py + 16, 2, 2); 
+            ctx.fillRect(px + 18, py + 26, 2, 2); 
+        }
+
+        function drawFlower(px, py) {
+            // Stängel (unten dunkler, oben heller für Tiefe)
+            ctx.fillStyle = '#2E7D32'; 
+            ctx.fillRect(px + 19, py + 22, 2, 12);
+            ctx.fillStyle = '#4CAF50'; 
+            ctx.fillRect(px + 19, py + 18, 2, 6);
+
+            // Blätter (gebogene Form mit Highlights an den Spitzen)
+            ctx.fillStyle = '#388E3C'; 
+            ctx.fillRect(px + 15, py + 26, 4, 2); // Blatt links Basis
+            ctx.fillRect(px + 21, py + 28, 4, 2); // Blatt rechts Basis
+            
+            ctx.fillStyle = '#4CAF50'; 
+            ctx.fillRect(px + 13, py + 24, 2, 2); // Blatt links Spitze
+            ctx.fillRect(px + 15, py + 24, 2, 2); // Übergang
+            ctx.fillRect(px + 25, py + 26, 2, 2); // Blatt rechts Spitze
+
+            // Blüte Schatten (Dunkles Magenta für Volumen)
+            ctx.fillStyle = '#AD1457'; 
+            ctx.fillRect(px + 14, py + 14, 12, 10);
+            ctx.fillRect(px + 16, py + 24, 8, 2); // Unterer Schattenrand
+
+            // Blüte Hauptfarbe (Kräftiges Pink/Rose)
+            ctx.fillStyle = '#D81B60'; 
+            ctx.fillRect(px + 14, py + 12, 12, 10); // Zentraler Teil
+            ctx.fillRect(px + 12, py + 14, 16, 6);  // Äußere Ausdehnung
+
+            // Blüte Highlights (Helles Rosa für Lichteinfall)
+            ctx.fillStyle = '#F48FB1'; 
+            ctx.fillRect(px + 14, py + 12, 4, 2); // Highlight oben links
+            ctx.fillRect(px + 22, py + 12, 4, 2); // Highlight oben rechts
+            ctx.fillRect(px + 12, py + 14, 2, 4); // Highlight Kante links
+
+            // Blütenmitte (Schattenbereich unten/orange)
+            ctx.fillStyle = '#F57F17'; 
+            ctx.fillRect(px + 18, py + 16, 4, 4);
+
+            // Blütenmitte (Leuchtendes Gelb oben)
+            ctx.fillStyle = '#FFEE58'; 
+            ctx.fillRect(px + 18, py + 16, 4, 2);
+            ctx.fillRect(px + 18, py + 18, 2, 2); // Kleine Struktur in der Mitte
+        }
+
         function drawGrass(px, py, x, y) {
             ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; 
             ctx.fillRect(px, py, tileSize, tileSize);
@@ -2288,11 +2411,20 @@
             ctx.fillStyle = colorCore; ctx.fillRect(px + 18, py + 18, 4, 18);
         }
 
+        // --- ANGEPASSTE DRAW MAP FUNKTION ---
         function drawMap() {
             for (let y = 0; y < rows; y++) {
                 for (let x = 0; x < cols; x++) {
                     const px = x * tileSize; const py = y * tileSize + headerHeight; 
-                    if (grid[y][x] === 1) drawStonePath(px, py); else drawGrass(px, py, x, y);
+                    if (grid[y][x] === 1) {
+                        drawStonePath(px, py); 
+                    } else {
+                        drawGrass(px, py, x, y);
+                        // Zeichne Vegetation, falls vorhanden
+                        if (grid[y][x] === 2) drawTree(px, py);
+                        else if (grid[y][x] === 3) drawBush(px, py);
+                        else if (grid[y][x] === 4) drawFlower(px, py);
+                    }
                 }
             }
             drawBlackHole(pathNodes[0].x * tileSize, pathNodes[0].y * tileSize + headerHeight);
@@ -2346,23 +2478,19 @@
         function updateLogic() {
             if (gameOver) return;
             
-            // 1. Alle Buffs und Slows vor dem Update zurücksetzen
             for (let enemy of enemies) {
                 enemy.currentSlow = 0;
                 enemy.speedBoost = 0;
             }
 
-            // 2. Golem Aura-Logik auswerten (2,5 Grid-Blöcke = 2.5 * 40 = 100 Pixel Radius)
             const golemBuffRadius = 2.5 * tileSize;
             const golems = enemies.filter(e => e.type === 'golem');
 
             for (let golem of golems) {
-                // Wenn Golem unter oder gleich 20% HP hat
                 if (golem.hp <= golem.maxHp * 0.2) {
                     for (let other of enemies) {
                         const dist = Math.hypot(other.x - golem.x, other.y - golem.y);
                         if (dist <= golemBuffRadius) {
-                            // 30% Tempo-Erhöhung für alle Einheiten im Umkreis
                             other.speedBoost = Math.max(other.speedBoost, 0.30);
                         }
                     }
@@ -2445,7 +2573,8 @@
                 drawRangeCircle(cx, cy, selectedTower.range, color);
             }
 
-            if (isDragging && dragGridX >= 0 && dragGridX < cols && dragGridY >= 0 && dragGridY < rows && grid[dragGridY][dragGridX] === 0) {
+            // --- ANGEPASSTE PRÜFUNG: NICHT AUF DEM PFAD BAUEN ---
+            if (isDragging && dragGridX >= 0 && dragGridX < cols && dragGridY >= 0 && dragGridY < rows && grid[dragGridY][dragGridX] !== 1) {
                 const cx = dragGridX * tileSize + tileSize / 2; const cy = dragGridY * tileSize + headerHeight + tileSize / 2;
                 let previewRange = 95; let previewColor = 'rgba(255, 204, 0, 0.25)';
                 if (selectedTowerType === 'laser') { previewRange = 70; previewColor = 'rgba(0, 255, 255, 0.25)'; } 
