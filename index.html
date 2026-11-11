@@ -880,7 +880,6 @@
                 resetMsg.style.color = '#00ff00';
                 resetMsg.innerText = 'Passwort erfolgreich geändert!';
                 
-                // Hash aus der URL entfernen, damit bei einem Seiten-Reload nicht wieder die Reset-Maske kommt
                 window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
 
                 setTimeout(async () => {
@@ -955,7 +954,6 @@
             if (error) {
                 authMsg.innerText = error.message;
             } else {
-                // NEU: Supabase Email-Enumeration-Schutz abfangen
                 if (data.user && data.user.identities && data.user.identities.length === 0) {
                     authMsg.style.color = '#ff5555';
                     authMsg.innerText = 'Ein Account mit dieser E-Mail-Adresse existiert bereits.';
@@ -1267,16 +1265,14 @@
 
         fetchLeaderboard();
 
-       async function handleSaveScore() {
+        async function handleSaveScore() {
             if (!currentUser) return;
             soundFX.click();
 
-            // Button temporär deaktivieren, damit nicht doppelt geklickt wird
             saveScoreBtn.disabled = true;
             saveScoreBtn.innerText = 'SAVING...';
 
             try {
-                // 1. Aktuellen Highscore des Spielers abrufen
                 const { data: existingEntry, error: fetchError } = await supabaseClient
                     .from('leaderboard')
                     .select('score, wave')
@@ -1288,15 +1284,13 @@
                 let isNewHighscore = true;
 
                 if (existingEntry) {
-                    // Prüfen, ob der neue Score WIRKLICH besser ist
                     if (pendingWave < existingEntry.wave || (pendingWave === existingEntry.wave && pendingScore <= existingEntry.score)) {
-                        isNewHighscore = false; // Neuer Score ist schlechter, nicht überschreiben
+                        isNewHighscore = false; 
                     }
                 }
 
                 if (isNewHighscore) {
                     if (existingEntry) {
-                        // UPDATE ausführen & per .select() prüfen lassen, ob es wirklich geklappt hat
                         const { data: updateData, error: updateError } = await supabaseClient
                             .from('leaderboard')
                             .update({
@@ -1309,13 +1303,10 @@
                             .select(); 
                         
                         if (updateError) throw updateError;
-                        
-                        // Wenn Supabase das Update wegen RLS ignoriert, ist updateData leer
                         if (!updateData || updateData.length === 0) {
-                            throw new Error("Update blockiert! Bitte das 'USING'-Feld in deiner Supabase UPDATE-Policy prüfen.");
+                            throw new Error("Update blockiert!");
                         }
                     } else {
-                        // INSERT ausführen (Noch gar kein Eintrag vorhanden)
                         const { error: insertError } = await supabaseClient
                             .from('leaderboard')
                             .insert({
@@ -1335,8 +1326,6 @@
             } finally {
                 saveScoreBtn.disabled = false;
                 saveScoreBtn.innerText = 'SAVE SCORE';
-                
-                // Leaderboard neu laden und Fenster schließen
                 await fetchLeaderboard();
                 closeScoreSection();
             }
@@ -1367,7 +1356,6 @@
             document.getElementById('nsKilled').innerText = pendingScore;
             document.getElementById('nsWave').innerText = pendingWave;
             
-            // Ansicht je nach Login-Status umschalten
             if (currentUser) {
                 loggedInScoreContainer.style.display = 'flex';
                 guestScoreContainer.style.display = 'none';
@@ -1447,6 +1435,7 @@
         let waveInProgress = false;
         let gameSpeed = 1; 
         let bossWarningTimer = 0;
+        let bossSpawnTimer = 0;
         let bossesRemainingToSpawn = 0;
 
         let selectedTower = null;         
@@ -1507,6 +1496,7 @@
             gibs = [];
             floatingTexts = [];
             bossWarningTimer = 0;
+            bossSpawnTimer = 0;
             enemiesToSpawn = 0;
             bossesRemainingToSpawn = 0;
             waveInProgress = false;
@@ -2220,11 +2210,9 @@
         }
 
         function drawGrass(px, py, x, y) {
-            // Grundlegendes Gras-Muster (Schachbrett-Optik)
             ctx.fillStyle = (x + y) % 2 === 0 ? '#3E8E41' : '#367C39'; 
             ctx.fillRect(px, py, tileSize, tileSize);
             
-            // Dezente Grashalme
             const seed = x * 13 + y * 31; 
             const numBlades = (seed % 2) + 1; 
             ctx.fillStyle = (x + y) % 2 === 0 ? '#2E6930' : '#275B28';
@@ -2234,11 +2222,9 @@
                 ctx.fillRect(bx, by, 2, 6); 
             }
 
-            // --- PERFEKTIONIERTE MINECRAFT-DEKO ---
             const decoRand = (x * 73 + y * 137) % 100;
 
             if (decoRand < 7) {
-                // 1. Grauer Stein / Cobblestone-Block
                 ctx.fillStyle = '#1a1a1a'; ctx.fillRect(px + 4, py + 4, 32, 32);
                 ctx.fillStyle = '#424242'; ctx.fillRect(px + 6, py + 6, 28, 28);
                 ctx.fillStyle = '#616161'; ctx.fillRect(px + 8, py + 8, 16, 16);
@@ -2246,7 +2232,6 @@
                 ctx.fillStyle = '#212121'; ctx.fillRect(px + 20, py + 20, 10, 10);
             } 
             else if (decoRand >= 7 && decoRand < 15) {
-                // 2. Minecraft-Wasserteich
                 ctx.fillStyle = '#01579b'; ctx.fillRect(px + 2, py + 2, 36, 36); 
                 ctx.fillStyle = '#0288d1'; ctx.fillRect(px + 4, py + 4, 32, 32); 
                 const time = Date.now() * 0.004;
@@ -2255,18 +2240,14 @@
                 ctx.fillRect(px + 8 + waveOffset, py + 12, 12, 5);
             } 
             else if (decoRand >= 15 && decoRand < 22) {
-                // 3. Echte Mohnblume (Poppy) - schmaler Stängel, rote Blütenblätter
-                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 18, py + 22, 4, 12); // Stängel
-                // Blütenform im Pixel-Look
+                ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 18, py + 22, 4, 12); 
                 ctx.fillStyle = '#b71c1c'; ctx.fillRect(px + 12, py + 10, 16, 12);
                 ctx.fillStyle = '#f44336'; ctx.fillRect(px + 14, py + 12, 12, 8);
-                ctx.fillStyle = '#ffcdd2'; ctx.fillRect(px + 16, py + 14, 4, 4);  // Glanzpunkt
+                ctx.fillStyle = '#ffcdd2'; ctx.fillRect(px + 16, py + 14, 4, 4);  
             } 
             else if (decoRand >= 22 && decoRand < 30) {
-                // 4. Klassischer Minecraft-Baum
-                ctx.fillStyle = '#271c19'; ctx.fillRect(px + 14, py + 16, 12, 22); // Stamm
+                ctx.fillStyle = '#271c19'; ctx.fillRect(px + 14, py + 16, 12, 22); 
                 ctx.fillStyle = '#4e342e'; ctx.fillRect(px + 16, py + 16, 8, 22);
-                // Blätterkrone
                 ctx.fillStyle = '#0d280d'; ctx.fillRect(px + 2, py + 2, 36, 20);
                 ctx.fillStyle = '#1b5e20'; ctx.fillRect(px + 4, py + 4, 32, 16);
                 ctx.fillStyle = '#2e7d32'; ctx.fillRect(px + 8, py + 6, 24, 10);
@@ -2368,12 +2349,32 @@
 
             if (waveInProgress) {
                 if (enemiesToSpawn > 0) {
-                    spawnTimer++; if (spawnTimer >= spawnInterval) { spawnEnemyRandomly(); enemiesToSpawn--; spawnTimer = 0; }
-                } else if (enemies.length === 0 && bossesRemainingToSpawn > 0) {
-                    if (bossesRemainingToSpawn === wave / 10) bossWarningTimer = 120;
-                    enemies.push(new Enemy(pathNodes[0].x, pathNodes[0].y, 'boss')); bossesRemainingToSpawn--;
-                } else if (enemiesToSpawn === 0 && bossesRemainingToSpawn === 0 && enemies.length === 0) {
-                    waveInProgress = false; startWaveBtn.disabled = false; startWaveBtn.innerText = `Start Wave ${wave + 1}`;
+                    spawnTimer++; 
+                    if (spawnTimer >= spawnInterval) { 
+                        spawnEnemyRandomly(); 
+                        enemiesToSpawn--; 
+                        spawnTimer = 0; 
+                    }
+                } 
+                else if (bossesRemainingToSpawn > 0) {
+                    const normalEnemiesCount = enemies.filter(e => e.type !== 'boss').length;
+
+                    if (normalEnemiesCount <= 10) {
+                        bossSpawnTimer++;
+                        if (bossSpawnTimer >= 50) {
+                            if (bossesRemainingToSpawn === Math.floor(wave / 10)) {
+                                bossWarningTimer = 120; 
+                            }
+                            enemies.push(new Enemy(pathNodes[0].x, pathNodes[0].y, 'boss'));
+                            bossesRemainingToSpawn--;
+                            bossSpawnTimer = 0;
+                        }
+                    }
+                } 
+                else if (enemiesToSpawn === 0 && bossesRemainingToSpawn === 0 && enemies.length === 0) {
+                    waveInProgress = false; 
+                    startWaveBtn.disabled = false; 
+                    startWaveBtn.innerText = `Start Wave ${wave + 1}`;
                 }
             }
 
@@ -2393,10 +2394,6 @@
                     coins += enemy.reward; killed++; updateButtonStates(); enemies.splice(i, 1); continue;
                 }
                 if (enemy.reachedEnd) { triggerGameOver(); break; }
-            }
-
-            if (waveInProgress && enemiesToSpawn === 0 && bossesRemainingToSpawn === 0 && enemies.length === 0) {
-                waveInProgress = false; startWaveBtn.disabled = false; startWaveBtn.innerText = `Start Wave ${wave + 1}`;
             }
         }
 
