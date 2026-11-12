@@ -1234,6 +1234,23 @@
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.2);
             },
+	    waveComplete: () => {
+                if (!audioCtx) return;
+                const now = audioCtx.currentTime;
+                // Ein kleiner Dreiklang (Trompeten-Effekt)
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, index) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + index * 0.08);
+                gain.gain.setValueAtTime(0.15, now + index * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + index * 0.08 + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + index * 0.08);
+                osc.stop(now + index * 0.08 + 0.3);
+                });
+            },
             gameover() {
                 if (!soundEnabled) return; initAudio();
                 const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
@@ -2398,29 +2415,32 @@
         this.waveNum = waveNum;
         this.killsCount = killsCount;
         this.x = GAME_WIDTH / 2;
-        this.y = GAME_HEIGHT / 2 - 40;
+        this.y = GAME_HEIGHT / 2 - 50;
         this.alpha = 0;
-        this.scale = 0.5;
+        this.scale = 0.2;
         this.timer = 0;
-        this.duration = 200; // Wie lange das Banner da ist (Frames)
+        this.duration = 300; // Bleibt dank gameSpeed-Anpassung konstant lang
     }
 
     update() {
-        // Wir dividieren durch gameSpeed, damit der Timer im gleichen Tempo
-        // wie Realzeit läuft, egal ob das Spiel gerade mit 1x, 2x oder 3x läuft.
         this.timer += 1 / gameSpeed;
         
-        if (this.timer < 18) {
-            // Einblenden und größer zoomen
-            this.alpha = this.timer / 18;
-            this.scale = 0.5 + (this.timer / 18) * 0.5;
-        } else if (this.timer > this.duration - 18) {
+        // Sanfter Einfliege-Effekt mit elastischem Overshoot (Bounce)
+        if (this.timer < 25) {
+            const progress = this.timer / 25;
+            // Elastische Formel für das Heranzoomen
+            this.scale = 1 + Math.sin(progress * Math.PI * 1.5) * 0.2 * (1 - progress);
+            this.alpha = Math.min(1, progress * 1.5);
+        } else if (this.timer > this.duration - 25) {
             // Ausblenden
-            this.alpha = (this.duration - this.timer) / 18;
+            const fadeProgress = (this.timer - (this.duration - 25)) / 25;
+            this.alpha = Math.max(0, 1 - fadeProgress);
+            this.scale = 1 - fadeProgress * 0.1;
         } else {
             this.alpha = 1.0;
             this.scale = 1.0;
-            this.y -= 0.15; // Ganz leicht nach oben schweben
+            // Ganz sanft nach oben schweben
+            this.y -= 0.12; 
         }
     }
 
@@ -2431,24 +2451,33 @@
         ctx.translate(this.x, this.y);
         ctx.scale(this.scale, this.scale);
 
-        // Retro-Box Hintergrund
-        ctx.fillStyle = 'rgba(10, 10, 10, 0.9)';
-        ctx.strokeStyle = '#00ff00';
-        ctx.lineWidth = 2;
-        ctx.fillRect(-170, -32, 340, 64);
-        ctx.strokeRect(-170, -32, 340, 64);
+        // Äußerer Glow-Effekt
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 15;
 
-        // Text: Welle X completed
-        ctx.font = 'bold 16px monospace';
+        // Banner-Hintergrund (Edles Dunkelgrau/Gold-Design im Retro-Look)
+        ctx.fillStyle = 'rgba(15, 15, 20, 0.92)';
+        ctx.strokeStyle = '#FFD700'; // Edler Goldton
+        ctx.lineWidth = 3;
+        ctx.fillRect(-190, -40, 380, 80);
+        ctx.strokeRect(-190, -40, 380, 80);
+
+        // Innerer dekorativer Rahmen
+        ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(-184, -34, 368, 68);
+
+        // Text: Welle X completed (Gold & Leuchtend)
+        ctx.font = 'bold 18px monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#00ff00';
-        ctx.fillText(`Welle ${this.waveNum} completed`, 0, -10);
+        ctx.fillStyle = '#FFD700';
+        ctx.fillText(`★ WELLE ${this.waveNum} GESCHAFFT ★`, 0, -12);
 
-        // Text: + Anzahl gekillter Gegner
+        // Text: Anzahl gekillter Gegner (Klares Weiß)
         ctx.font = '13px monospace';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText(`+ ${this.killsCount} gekillte Gegner`, 0, 12);
+        ctx.fillStyle = '#E0E0E0';
+        ctx.fillText(`${this.killsCount} Gegner erfolgreich eliminiert`, 0, 14);
 
         ctx.restore();
     }
@@ -2734,7 +2763,7 @@
 
 		    // <--- HIER DAS BANNER AUSLÖSEN:
 		    waveBanners.push(new WaveBanner(wave, killsThisWave));
-		    soundFX.coin(); // Optional ein netter Soundeffekt dazu
+		    soundFX.waveComplete(); // Optional ein netter Soundeffekt dazu
 
                     startWaveBtn.disabled = false; 
                     startWaveBtn.innerText = `Start Wave ${wave + 1}`;
