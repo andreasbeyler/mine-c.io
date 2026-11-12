@@ -1493,6 +1493,9 @@
         let dragGridX = -1;
         let dragGridY = -1;
 
+	let waveBanners = [];
+	let killsThisWave = 0;
+
         // --- ANGEPASSTE FUNKTION FÜR VEGETATION ---
         function generateVegetation() {
             for (let y = 0; y < rows; y++) {
@@ -1577,6 +1580,9 @@
             selectedTower = null;
             isDragging = false;
             speedBtn.innerText = '1x';
+
+	    waveBanners = [];
+	    killsThisWave = 0;
             
             setTowerSelection('basic');
             updateUpgradePanel(); 
@@ -1598,6 +1604,7 @@
                 soundFX.click();
                 wave++; 
                 waveInProgress = true;
+		killsThisWave = 0;
                 selectedTower = null; 
                 updateUpgradePanel();
                 
@@ -2386,6 +2393,67 @@
             }
         }
 
+	class WaveBanner {
+    constructor(waveNum, killsCount) {
+        this.waveNum = waveNum;
+        this.killsCount = killsCount;
+        this.x = GAME_WIDTH / 2;
+        this.y = GAME_HEIGHT / 2 - 40;
+        this.alpha = 0;
+        this.scale = 0.5;
+        this.timer = 0;
+        this.duration = 200; // Wie lange das Banner da ist (Frames)
+    }
+
+    update() {
+        // Wir dividieren durch gameSpeed, damit der Timer im gleichen Tempo
+        // wie Realzeit läuft, egal ob das Spiel gerade mit 1x, 2x oder 3x läuft.
+        this.timer += 1 / gameSpeed;
+        
+        if (this.timer < 18) {
+            // Einblenden und größer zoomen
+            this.alpha = this.timer / 18;
+            this.scale = 0.5 + (this.timer / 18) * 0.5;
+        } else if (this.timer > this.duration - 18) {
+            // Ausblenden
+            this.alpha = (this.duration - this.timer) / 18;
+        } else {
+            this.alpha = 1.0;
+            this.scale = 1.0;
+            this.y -= 0.15; // Ganz leicht nach oben schweben
+        }
+    }
+
+    draw(ctx) {
+        if (this.alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.translate(this.x, this.y);
+        ctx.scale(this.scale, this.scale);
+
+        // Retro-Box Hintergrund
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.9)';
+        ctx.strokeStyle = '#00ff00';
+        ctx.lineWidth = 2;
+        ctx.fillRect(-170, -32, 340, 64);
+        ctx.strokeRect(-170, -32, 340, 64);
+
+        // Text: Welle X completed
+        ctx.font = 'bold 16px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#00ff00';
+        ctx.fillText(`Welle ${this.waveNum} completed`, 0, -10);
+
+        // Text: + Anzahl gekillter Gegner
+        ctx.font = '13px monospace';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(`+ ${this.killsCount} gekillte Gegner`, 0, 12);
+
+        ctx.restore();
+    }
+}
+
         function spawnEnemyRandomly() {
             const rand = Math.random(); 
             let type = 'zombie';
@@ -2663,6 +2731,11 @@
                 } 
                 else if (enemiesToSpawn === 0 && bossesRemainingToSpawn === 0 && enemies.length === 0) {
                     waveInProgress = false; 
+
+		    // <--- HIER DAS BANNER AUSLÖSEN:
+		    waveBanners.push(new WaveBanner(wave, killsThisWave));
+		    soundFX.coin(); // Optional ein netter Soundeffekt dazu
+
                     startWaveBtn.disabled = false; 
                     startWaveBtn.innerText = `Start Wave ${wave + 1}`;
                 }
@@ -2674,6 +2747,7 @@
             for (let i = smokeParticles.length - 1; i >= 0; i--) { smokeParticles[i].update(); if (smokeParticles[i].alpha <= 0) smokeParticles.splice(i, 1); }
             for (let i = gibs.length - 1; i >= 0; i--) { gibs[i].update(); if (gibs[i].alpha <= 0) gibs.splice(i, 1); }
             for (let i = floatingTexts.length - 1; i >= 0; i--) { floatingTexts[i].update(); if (floatingTexts[i].alpha <= 0) floatingTexts.splice(i, 1); }
+	    for (let i = waveBanners.length - 1; i >= 0; i--) { waveBanners[i].update(); if (waveBanners[i].timer >= waveBanners[i].duration) waveBanners.splice(i, 1); }
 
             for (let i = enemies.length - 1; i >= 0; i--) {
                 const enemy = enemies[i]; enemy.update();
@@ -2701,7 +2775,7 @@
                     }
 
                     floatingTexts.push(new FloatingText(enemy.x, enemy.y, `+$${enemy.reward}`, '#ffcc00'));
-                    coins += enemy.reward; killed++; updateButtonStates(); enemies.splice(i, 1); continue;
+                    coins += enemy.reward; killed++; killsThisWave++; updateButtonStates(); enemies.splice(i, 1); continue;
                 }
                 if (enemy.reachedEnd) { triggerGameOver(); break; }
             }
@@ -2740,6 +2814,7 @@
             for (let enemy of enemies) enemy.draw(ctx);
             for (let tower of towers) { if (tower.drawLaserBeam) tower.drawLaserBeam(); }
             for (let ft of floatingTexts) ft.draw(ctx);
+	    for (let banner of waveBanners) banner.draw(ctx);
 
             drawUIHeader();
             drawBossWarning();
