@@ -1644,16 +1644,22 @@
             }
         });
 
-        speedBtn.addEventListener('click', () => {
+        speedBtn.addEventListener('click', (e) => {
+            // Verhindert, dass das Event irgendwo im Canvas hängen bleibt
+            e.stopPropagation();
             soundFX.click();
-            if (gameSpeed === 0.75) gameSpeed = 1.5;
-            else if (gameSpeed === 1.5) gameSpeed = 2.25;
-            else gameSpeed = 0.75;
-            
-            // Anzeige im Button beibehalten
-            if (gameSpeed === 0.75) speedBtn.innerText = '1x';
-            else if (gameSpeed === 1.5) speedBtn.innerText = '2x';
-            else speedBtn.innerText = '3x';
+
+            // Direktes Durchschalten der Geschwindigkeiten beim ersten Klick
+            if (gameSpeed === 0.75) {
+                gameSpeed = 1.5;
+                speedBtn.innerText = '2x';
+            } else if (gameSpeed === 1.5) {
+                gameSpeed = 2.25;
+                speedBtn.innerText = '3x';
+            } else {
+                gameSpeed = 0.75;
+                speedBtn.innerText = '1x';
+            }
         });
 
         soundBtn.addEventListener('click', () => {
