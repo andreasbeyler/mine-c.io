@@ -1828,7 +1828,7 @@
         this.hasSlowTarget = false; 
 
         if (type === 'fire') { this.baseRange = 100; this.baseDamage = 65; this.cooldownMax = 100; this.cost = 120; } 
-        else if (type === 'laser') { this.baseRange = 110; this.baseMinDamage = 0.3; this.baseMaxDamage = 2.0; this.baseDamage = 0.3; this.cost = 105; }  
+        else if (type === 'laser') { this.baseRange = 90; this.baseMinDamage = 0.225; this.baseMaxDamage = 1.5; this.baseDamage = 0.225; this.cost = 105; }  
         else if (type === 'slow') { this.baseRange = 100; this.baseDamage = 2; this.cooldownMax = 50; this.cost = 70; } 
         else { this.baseRange = 95; this.baseDamage = 18; this.cooldownMax = 44; this.cost = 50; }
         this.totalSpent = this.cost; this.updateStats();
@@ -2838,7 +2838,7 @@
             if (isDragging && dragGridX >= 0 && dragGridX < cols && dragGridY >= 0 && dragGridY < rows && grid[dragGridY][dragGridX] !== 1 && !targetHasTower) {
                 const cx = dragGridX * tileSize + tileSize / 2; const cy = dragGridY * tileSize + headerHeight + tileSize / 2;
                 let previewRange = 95; let previewColor = 'rgba(255, 204, 0, 0.25)';
-                if (selectedTowerType === 'laser') { previewRange = 110; previewColor = 'rgba(0, 255, 255, 0.25)'; } 
+                if (selectedTowerType === 'laser') { previewRange = 90; previewColor = 'rgba(0, 255, 255, 0.25)'; } 
                 else if (selectedTowerType === 'slow') { previewRange = 100; previewColor = 'rgba(144, 202, 249, 0.25)'; } 
                 else if (selectedTowerType === 'fire') { previewRange = 100; previewColor = 'rgba(255, 87, 34, 0.25)'; }
                 drawRangeCircle(cx, cy, previewRange, previewColor);
