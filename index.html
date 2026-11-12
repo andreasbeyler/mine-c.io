@@ -21,7 +21,7 @@
             color: #aaaaaa;
             width: 100vw;       
             min-height: 100dvh;     
-            overflow-x: hidden;   
+            overflow-x: hidden;    
             user-select: none;
             -webkit-user-select: none;
         }
@@ -482,7 +482,7 @@
             gap: 6px;
             height: 42px;
             position: absolute; 
-            bottom: 100px;       
+            bottom: 100px;        
             left: 0;            
             z-index: 60;        
         }
@@ -1098,13 +1098,14 @@
             ctxG.fillStyle = '#212121'; ctxG.fillRect(20, 10, 3, 3);
 
             const ctxB = setupIconCanvas('iconBoss', 32);
-            ctxB.fillStyle = '#212121'; ctxB.fillRect(6, 12, 20, 14);
-            ctxB.fillStyle = '#424242'; ctxB.fillRect(4, 4, 8, 8);
-            ctxB.fillStyle = '#424242'; ctxB.fillRect(12, 2, 8, 8);
-            ctxB.fillStyle = '#424242'; ctxB.fillRect(20, 4, 8, 8);
-            ctxB.fillStyle = '#ff1744'; ctxB.fillRect(6, 6, 2, 2);
-            ctxB.fillStyle = '#ff1744'; ctxB.fillRect(15, 4, 2, 2);
-            ctxB.fillStyle = '#ff1744'; ctxB.fillRect(22, 6, 2, 2);
+            // Schöneres Wither-Boss Icon für UI
+            ctxB.fillStyle = '#1f1f1f'; ctxB.fillRect(6, 12, 20, 14);
+            ctxB.fillStyle = '#2c2c2c'; ctxB.fillRect(4, 4, 8, 8);
+            ctxB.fillStyle = '#2c2c2c'; ctxB.fillRect(12, 2, 8, 8);
+            ctxB.fillStyle = '#2c2c2c'; ctxB.fillRect(20, 4, 8, 8);
+            ctxB.fillStyle = '#e040fb'; ctxB.fillRect(6, 6, 2, 2);
+            ctxB.fillStyle = '#e040fb'; ctxB.fillRect(15, 4, 2, 2);
+            ctxB.fillStyle = '#e040fb'; ctxB.fillRect(22, 6, 2, 2);
         }
         drawThreatIcons();
 
@@ -1234,10 +1235,9 @@
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.2);
             },
-	    waveComplete: () => {
+            waveComplete: () => {
                 if (!audioCtx) return;
                 const now = audioCtx.currentTime;
-                // Ein kleiner Dreiklang (Trompeten-Effekt)
                 [523.25, 659.25, 783.99, 1046.50].forEach((freq, index) => {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
@@ -1505,22 +1505,19 @@
         let bossSpawnTimer = 0;
         let bossesRemainingToSpawn = 0;
 
-        let selectedTower = null;         
-        let isDragging = false;           
+        let selectedTower = null;          
+        let isDragging = false;            
         let dragGridX = -1;
         let dragGridY = -1;
 
-	let waveBanners = [];
-	let killsThisWave = 0;
+        let waveBanners = [];
+        let killsThisWave = 0;
 
-        // --- ANGEPASSTE FUNKTION FÜR VEGETATION ---
         function generateVegetation() {
             for (let y = 0; y < rows; y++) {
                 for (let x = 0; x < cols; x++) {
-                    // 0 = Gras (bebaubar). Nur Felder bepflanzen, die kein Pfad (1) sind.
                     if (grid[y][x] === 0) {
                         const rand = Math.random();
-                        // Wahrscheinlichkeiten: 10% Baum (2), 15% Strauch (3), 20% Blume (4)
                         if (rand < 0.10) {
                             grid[y][x] = 2;
                         } else if (rand < 0.25) {
@@ -1545,7 +1542,7 @@
             }
 
             let current = pathNodes[0];
-            grid[current.y][current.x] = 1; // 1 = Pfad
+            grid[current.y][current.x] = 1; 
             for (let i = 1; i < pathNodes.length; i++) {
                 const next = pathNodes[i];
                 if (current.y === next.y) {
@@ -1559,7 +1556,6 @@
                 current = next;
             }
             
-            // Verteile Vegetation auf der Wiese
             generateVegetation();
         }
         generateMap();
@@ -1598,8 +1594,8 @@
             isDragging = false;
             speedBtn.innerText = '1x';
 
-	    waveBanners = [];
-	    killsThisWave = 0;
+            waveBanners = [];
+            killsThisWave = 0;
             
             setTowerSelection('basic');
             updateUpgradePanel(); 
@@ -1617,7 +1613,6 @@
         });
 
         startWaveBtn.addEventListener('click', () => {
-            // Wenn eine Welle läuft, das Spiel vorbei ist oder das Banner noch eingeblendet wird: abbrechen
             if (waveInProgress || gameOver || waveBanners.length > 0) return;
             
             soundFX.click();
@@ -1632,7 +1627,7 @@
                 spawnInterval = 35;
                 bossesRemainingToSpawn = (wave / 10) * 2; 
             } else {
-                enemiesToSpawn = Math.round(3 + (wave * 2.3)); 
+                enemiesToSpawn = Math.round3 + (wave * 2.3); 
                 spawnInterval = Math.max(15, 75 - (wave * 3.5)); 
                 bossesRemainingToSpawn = 0;
             }
@@ -1646,11 +1641,9 @@
         });
 
         speedBtn.addEventListener('click', (e) => {
-            // Verhindert, dass das Event irgendwo im Canvas hängen bleibt
             e.stopPropagation();
             soundFX.click();
 
-            // Direktes Durchschalten der Geschwindigkeiten beim ersten Klick
             if (gameSpeed === 0.75) {
                 gameSpeed = 1.5;
                 speedBtn.innerText = '2x';
@@ -1804,242 +1797,242 @@
         }
 
         class Tower {
-    constructor(x, y, type) {
-        this.x = x; this.y = y; this.type = type; this.level = 1;
-        this.attackCooldown = 0; this.currentLaserTarget = null; this.laserDurationOnTarget = 0;
-        this.currentAimTarget = null; this.rotationAngle = 0;
-        this.recoilTimer = 0;
-        this.slowCrystalAngle = 0; 
-        this.hasSlowTarget = false; 
+            constructor(x, y, type) {
+                this.x = x; this.y = y; this.type = type; this.level = 1;
+                this.attackCooldown = 0; this.currentLaserTarget = null; this.laserDurationOnTarget = 0;
+                this.currentAimTarget = null; this.rotationAngle = 0;
+                this.recoilTimer = 0;
+                this.slowCrystalAngle = 0; 
+                this.hasSlowTarget = false; 
 
-        if (type === 'fire') { this.baseRange = 100; this.baseDamage = 65; this.cooldownMax = 100; this.cost = 120; } 
-        else if (type === 'laser') { this.baseRange = 110; this.baseMinDamage = 0.3; this.baseMaxDamage = 2.0; this.baseDamage = 0.3; this.cost = 105; } // Von 70 auf 110 erhöht (+1 Block) 
-        else if (type === 'slow') { this.baseRange = 100; this.baseDamage = 2; this.cooldownMax = 50; this.cost = 70; } 
-        else { this.baseRange = 95; this.baseDamage = 18; this.cooldownMax = 44; this.cost = 50; }
-        this.totalSpent = this.cost; this.updateStats();
-    }
-
-    updateStats() {
-        const multiplier = 1 + (this.level - 1) * 0.3;
-        const rangeMultiplier = 1 + (this.level - 1) * 0.15;
-        if (this.type === 'laser') {
-            this.minDamage = +(this.baseMinDamage * multiplier).toFixed(2);
-            this.maxDamage = +(this.baseMaxDamage * multiplier).toFixed(2);
-            this.damage = this.minDamage;
-        } else {
-            this.damage = +(this.baseDamage * multiplier).toFixed(1);
-        }
-        this.range = Math.round(this.baseRange * rangeMultiplier);
-        if (this.type === 'slow') { const slowPercentages = [0.30, 0.40, 0.50]; this.slowEffect = slowPercentages[this.level - 1] || 0.50; }
-        
-        if (this.type === 'fire') { this.upgradeCost = this.level === 1 ? 150 : (this.level === 2 ? 200 : 0); } 
-        else if (this.type === 'laser') { this.upgradeCost = this.level === 1 ? 130 : (this.level === 2 ? 170 : 0); } 
-        else if (this.type === 'slow') { this.upgradeCost = this.level === 1 ? 90 : (this.level === 2 ? 120 : 0); } 
-        else { this.upgradeCost = this.level === 1 ? 75 : (this.level === 2 ? 100 : 0); }
-    }
-
-    upgrade() {
-        if (this.level < 3 && coins >= this.upgradeCost) {
-            soundFX.coin(); 
-            coins -= this.upgradeCost; this.totalSpent += this.upgradeCost; this.level++;
-            this.updateStats(); updateUpgradePanel();
-        }
-    }
-
-    sell() {
-        soundFX.coin(); 
-        const refund = Math.round(this.totalSpent * 0.5); coins += refund;
-    }
-
-    update() {
-        if (this.recoilTimer > 0) this.recoilTimer--;
-        const cx = this.x * tileSize + tileSize / 2;
-        const cy = this.y * tileSize + headerHeight + tileSize / 2;
-
-        let targetForAiming = null; let minDistForAim = Infinity;
-        for (let enemy of enemies) {
-            const dist = Math.hypot(enemy.x - cx, enemy.y - cy);
-            if (dist <= this.range && dist < minDistForAim) { minDistForAim = dist; targetForAiming = enemy; }
-        }
-
-        if (targetForAiming && this.type !== 'slow') {
-            this.currentAimTarget = targetForAiming;
-            const targetAngle = Math.atan2(targetForAiming.y - cy, targetForAiming.x - cx);
-            let angleDiff = targetAngle - this.rotationAngle;
-            while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-            while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-            this.rotationAngle += angleDiff * 0.2;
-        }
-
-        if (this.type === 'laser') {
-            let newLaserTarget = null; let strongestEnemy = null; let maxHpFound = -1;
-            for (let enemy of enemies) {
-                const dist = Math.hypot(enemy.x - cx, enemy.y - cy);
-                if (dist <= this.range && enemy.maxHp > maxHpFound) { maxHpFound = enemy.maxHp; strongestEnemy = enemy; }
-            }
-            newLaserTarget = strongestEnemy;
-
-            if (this.currentLaserTarget && this.currentLaserTarget === newLaserTarget && this.currentLaserTarget.hp > 0) {
-                this.laserDurationOnTarget++;
-                const rampProgress = Math.min(1, this.laserDurationOnTarget / 120); 
-                this.damage = +(this.minDamage + (this.maxDamage - this.minDamage) * rampProgress).toFixed(2);
-            } else {
-                this.currentLaserTarget = newLaserTarget; this.laserDurationOnTarget = 0; this.damage = this.minDamage;
+                if (type === 'fire') { this.baseRange = 100; this.baseDamage = 65; this.cooldownMax = 100; this.cost = 120; } 
+                else if (type === 'laser') { this.baseRange = 110; this.baseMinDamage = 0.3; this.baseMaxDamage = 2.0; this.baseDamage = 0.3; this.cost = 105; } 
+                else if (type === 'slow') { this.baseRange = 100; this.baseDamage = 2; this.cooldownMax = 50; this.cost = 70; } 
+                else { this.baseRange = 95; this.baseDamage = 18; this.cooldownMax = 44; this.cost = 50; }
+                this.totalSpent = this.cost; this.updateStats();
             }
 
-            if (this.currentLaserTarget) {
-                const dist = Math.hypot(this.currentLaserTarget.x - cx, this.currentLaserTarget.y - cy);
-                if (this.currentLaserTarget.hp <= 0 || dist > this.range) {
-                    this.currentLaserTarget = null; this.damage = this.minDamage;
+            updateStats() {
+                const multiplier = 1 + (this.level - 1) * 0.3;
+                const rangeMultiplier = 1 + (this.level - 1) * 0.15;
+                if (this.type === 'laser') {
+                    this.minDamage = +(this.baseMinDamage * multiplier).toFixed(2);
+                    this.maxDamage = +(this.baseMaxDamage * multiplier).toFixed(2);
+                    this.damage = this.minDamage;
                 } else {
-                    const laserMultiplier = (this.currentLaserTarget.type === 'skeleton' || this.currentLaserTarget.type === 'creeper') ? 1.6 : 1.0;
-                    let dmgDealt = this.damage * laserMultiplier;
-                    if (this.currentLaserTarget.type === 'boss') {
-                        dmgDealt *= 0.6; 
-                    }
-                    this.currentLaserTarget.hp -= dmgDealt;
-                    this.currentLaserTarget.isLasered = true;
-                    this.currentAimTarget = this.currentLaserTarget; soundFX.laser();
+                    this.damage = +(this.baseDamage * multiplier).toFixed(1);
                 }
-            }
-        } 
-        else if (this.type === 'slow') {
-            if (this.attackCooldown > 0) this.attackCooldown--;
-            
-            let foundTarget = false;
-            for (let enemy of enemies) {
-                const dist = Math.hypot(enemy.x - cx, enemy.y - cy);
-                if (dist <= this.range) {
-                    if (this.slowEffect > enemy.currentSlow) {
-                        enemy.currentSlow = this.slowEffect;
-                    }
-                    foundTarget = true;
-                }
-            }
-            
-            this.hasSlowTarget = foundTarget;
-            if (this.hasSlowTarget) {
-                this.slowCrystalAngle += 0.04 * gameSpeed;
-            }
-
-            if (this.attackCooldown === 0 && targetForAiming) {
-                soundFX.slow(); projectiles.push(new Projectile(cx, cy, targetForAiming, this.damage, 'slow')); this.attackCooldown = this.cooldownMax;
-                this.recoilTimer = 6;
-            }
-        } 
-        else {
-            if (this.attackCooldown > 0) this.attackCooldown--;
-            if (this.attackCooldown === 0 && targetForAiming) {
-                const pType = (this.type === 'fire') ? 'fire' : 'normal';
-                if (this.type === 'fire') soundFX.fire(); else soundFX.shoot();
-                projectiles.push(new Projectile(cx, cy, targetForAiming, this.damage, pType));
-                this.attackCooldown = this.cooldownMax;
-                this.recoilTimer = 8;
-                const angle = Math.atan2(targetForAiming.y - cy, targetForAiming.x - cx);
-                smokeParticles.push(new SmokeParticle(cx, cy, angle));
-            }
-        }
-    }
-
-    draw(ctx) {
-        const px = this.x * tileSize; const py = this.y * tileSize + headerHeight;
-        const cx = px + tileSize / 2; const cy = py + tileSize / 2;
-
-        if (this.type === 'slow') {
-            if (selectedTower === this) {
-                ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, this.range, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(144, 202, 249, 0.2)'; ctx.fill();
-                ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(144, 202, 249, 0.8)'; ctx.stroke();
-                ctx.restore();
-            } else if (this.hasSlowTarget) {
-                ctx.save();
-                ctx.beginPath();
-                ctx.arc(cx, cy, this.range, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(144, 202, 249, 0.1)';
-                ctx.fill();
+                this.range = Math.round(this.baseRange * rangeMultiplier);
+                if (this.type === 'slow') { const slowPercentages = [0.30, 0.40, 0.50]; this.slowEffect = slowPercentages[this.level - 1] || 0.50; }
                 
-                const headAngle = this.slowCrystalAngle;
-                ctx.beginPath();
-                ctx.arc(cx, cy, this.range, headAngle - Math.PI, headAngle);
-                ctx.lineWidth = 2.5;
-                ctx.strokeStyle = 'rgba(144, 202, 249, 0.8)';
-                ctx.stroke();
+                if (this.type === 'fire') { this.upgradeCost = this.level === 1 ? 150 : (this.level === 2 ? 200 : 0); } 
+                else if (this.type === 'laser') { this.upgradeCost = this.level === 1 ? 130 : (this.level === 2 ? 170 : 0); } 
+                else if (this.type === 'slow') { this.upgradeCost = this.level === 1 ? 90 : (this.level === 2 ? 120 : 0); } 
+                else { this.upgradeCost = this.level === 1 ? 75 : (this.level === 2 ? 100 : 0); }
+            }
+
+            upgrade() {
+                if (this.level < 3 && coins >= this.upgradeCost) {
+                    soundFX.coin(); 
+                    coins -= this.upgradeCost; this.totalSpent += this.upgradeCost; this.level++;
+                    this.updateStats(); updateUpgradePanel();
+                }
+            }
+
+            sell() {
+                soundFX.coin(); 
+                const refund = Math.round(this.totalSpent * 0.5); coins += refund;
+            }
+
+            update() {
+                if (this.recoilTimer > 0) this.recoilTimer--;
+                const cx = this.x * tileSize + tileSize / 2;
+                const cy = this.y * tileSize + headerHeight + tileSize / 2;
+
+                let targetForAiming = null; let minDistForAim = Infinity;
+                for (let enemy of enemies) {
+                    const dist = Math.hypot(enemy.x - cx, enemy.y - cy);
+                    if (dist <= this.range && dist < minDistForAim) { minDistForAim = dist; targetForAiming = enemy; }
+                }
+
+                if (targetForAiming && this.type !== 'slow') {
+                    this.currentAimTarget = targetForAiming;
+                    const targetAngle = Math.atan2(targetForAiming.y - cy, targetForAiming.x - cx);
+                    let angleDiff = targetAngle - this.rotationAngle;
+                    while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+                    while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+                    this.rotationAngle += angleDiff * 0.2;
+                }
+
+                if (this.type === 'laser') {
+                    let newLaserTarget = null; let strongestEnemy = null; let maxHpFound = -1;
+                    for (let enemy of enemies) {
+                        const dist = Math.hypot(enemy.x - cx, enemy.y - cy);
+                        if (dist <= this.range && enemy.maxHp > maxHpFound) { maxHpFound = enemy.maxHp; strongestEnemy = enemy; }
+                    }
+                    newLaserTarget = strongestEnemy;
+
+                    if (this.currentLaserTarget && this.currentLaserTarget === newLaserTarget && this.currentLaserTarget.hp > 0) {
+                        this.laserDurationOnTarget++;
+                        const rampProgress = Math.min(1, this.laserDurationOnTarget / 120); 
+                        this.damage = +(this.minDamage + (this.maxDamage - this.minDamage) * rampProgress).toFixed(2);
+                    } else {
+                        this.currentLaserTarget = newLaserTarget; this.laserDurationOnTarget = 0; this.damage = this.minDamage;
+                    }
+
+                    if (this.currentLaserTarget) {
+                        const dist = Math.hypot(this.currentLaserTarget.x - cx, this.currentLaserTarget.y - cy);
+                        if (this.currentLaserTarget.hp <= 0 || dist > this.range) {
+                            this.currentLaserTarget = null; this.damage = this.minDamage;
+                        } else {
+                            const laserMultiplier = (this.currentLaserTarget.type === 'skeleton' || this.currentLaserTarget.type === 'creeper') ? 1.6 : 1.0;
+                            let dmgDealt = this.damage * laserMultiplier;
+                            if (this.currentLaserTarget.type === 'boss') {
+                                dmgDealt *= 0.6; 
+                            }
+                            this.currentLaserTarget.hp -= dmgDealt;
+                            this.currentLaserTarget.isLasered = true;
+                            this.currentAimTarget = this.currentLaserTarget; soundFX.laser();
+                        }
+                    }
+                } 
+                else if (this.type === 'slow') {
+                    if (this.attackCooldown > 0) this.attackCooldown--;
+                    
+                    let foundTarget = false;
+                    for (let enemy of enemies) {
+                        const dist = Math.hypot(enemy.x - cx, enemy.y - cy);
+                        if (dist <= this.range) {
+                            if (this.slowEffect > enemy.currentSlow) {
+                                enemy.currentSlow = this.slowEffect;
+                            }
+                            foundTarget = true;
+                        }
+                    }
+                    
+                    this.hasSlowTarget = foundTarget;
+                    if (this.hasSlowTarget) {
+                        this.slowCrystalAngle += 0.04 * gameSpeed;
+                    }
+
+                    if (this.attackCooldown === 0 && targetForAiming) {
+                        soundFX.slow(); projectiles.push(new Projectile(cx, cy, targetForAiming, this.damage, 'slow')); this.attackCooldown = this.cooldownMax;
+                        this.recoilTimer = 6;
+                    }
+                } 
+                else {
+                    if (this.attackCooldown > 0) this.attackCooldown--;
+                    if (this.attackCooldown === 0 && targetForAiming) {
+                        const pType = (this.type === 'fire') ? 'fire' : 'normal';
+                        if (this.type === 'fire') soundFX.fire(); else soundFX.shoot();
+                        projectiles.push(new Projectile(cx, cy, targetForAiming, this.damage, pType));
+                        this.attackCooldown = this.cooldownMax;
+                        this.recoilTimer = 8;
+                        const angle = Math.atan2(targetForAiming.y - cy, targetForAiming.x - cx);
+                        smokeParticles.push(new SmokeParticle(cx, cy, angle));
+                    }
+                }
+            }
+
+            draw(ctx) {
+                const px = this.x * tileSize; const py = this.y * tileSize + headerHeight;
+                const cx = px + tileSize / 2; const cy = py + tileSize / 2;
+
+                if (this.type === 'slow') {
+                    if (selectedTower === this) {
+                        ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, this.range, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(144, 202, 249, 0.2)'; ctx.fill();
+                        ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(144, 202, 249, 0.8)'; ctx.stroke();
+                        ctx.restore();
+                    } else if (this.hasSlowTarget) {
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, this.range, 0, Math.PI * 2);
+                        ctx.fillStyle = 'rgba(144, 202, 249, 0.1)';
+                        ctx.fill();
+                        
+                        const headAngle = this.slowCrystalAngle;
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, this.range, headAngle - Math.PI, headAngle);
+                        ctx.lineWidth = 2.5;
+                        ctx.strokeStyle = 'rgba(144, 202, 249, 0.8)';
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+
+                ctx.save();
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                ctx.shadowBlur = 8;
+                ctx.shadowOffsetY = 4;
+
+                const recoilOffset = this.recoilTimer > 0 ? -3 : 0;
+
+                if (this.type === 'fire') {
+                    ctx.fillStyle = '#212121'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
+                    ctx.shadowColor = 'transparent';
+                    ctx.fillStyle = '#d84315'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
+                    ctx.save(); ctx.translate(cx, cy); ctx.rotate(this.rotationAngle);
+                    ctx.fillStyle = '#ff5722'; ctx.fillRect(-6 + recoilOffset, -6, 16, 12); 
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(2 + recoilOffset, -8, 6, 4); 
+                    if (this.recoilTimer > 4) {
+                        ctx.fillStyle = '#ffeb3b'; ctx.fillRect(8, -4, 8, 8);
+                    }
+                    ctx.restore();
+                    const flameBob = Math.sin(Date.now() * 0.015) * 2; ctx.fillStyle = '#ffeb3b';
+                    ctx.beginPath(); ctx.arc(cx, py + 12 + flameBob, 4, 0, Math.PI * 2); ctx.fill();
+                } 
+                else if (this.type === 'laser') {
+                    ctx.fillStyle = '#006064'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
+                    ctx.shadowColor = 'transparent';
+                    ctx.fillStyle = '#00bcd4'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
+                    ctx.save(); ctx.translate(cx, cy); ctx.rotate(this.rotationAngle);
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(-8, -4, 16, 8); ctx.fillStyle = '#ff1744'; ctx.fillRect(-2, -8, 6, 3); ctx.restore();
+                    const coreGlow = 0.5 + Math.sin(Date.now() * 0.01) * 0.5; ctx.fillStyle = `rgba(0, 255, 255, ${coreGlow})`; ctx.fillRect(cx - 3, cy - 3, 6, 6);
+                } 
+                else if (this.type === 'slow') {
+                    ctx.fillStyle = '#1565c0'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
+                    ctx.shadowColor = 'transparent';
+                    ctx.fillStyle = '#42a5f5'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
+                    ctx.save(); ctx.translate(cx, cy); 
+                    ctx.rotate(this.slowCrystalAngle);
+                    ctx.fillStyle = '#90caf9'; ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(8, 0); ctx.lineTo(0, 10); ctx.lineTo(-8, 0); ctx.closePath(); ctx.fill();
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(-2, -2, 4, 4); ctx.restore();
+                } 
+                else {
+                    ctx.fillStyle = '#555555'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
+                    ctx.shadowColor = 'transparent';
+                    ctx.fillStyle = '#777777'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
+                    ctx.save(); ctx.translate(cx, cy); ctx.rotate(this.rotationAngle);
+                    ctx.fillStyle = '#333333'; ctx.fillRect(-2 + recoilOffset, -4, 18, 8); 
+                    ctx.fillStyle = '#00ff00'; ctx.fillRect(2 + recoilOffset, -8, 6, 4); 
+                    if (this.recoilTimer > 4) {
+                        ctx.fillStyle = '#ffffff'; ctx.fillRect(14, -3, 6, 6);
+                    }
+                    ctx.restore();
+                }
                 ctx.restore();
+
+                ctx.fillStyle = '#ffcc00';
+                for (let i = 0; i < this.level; i++) { ctx.fillRect(px + tileSize - 8 - (i * 5), py + 6, 3, 3); }
+            }
+
+            drawLaserBeam() {
+                if (this.type === 'laser' && this.currentLaserTarget && this.currentLaserTarget.hp > 0) {
+                    const px = this.x * tileSize; const py = this.y * tileSize + headerHeight;
+                    const cx = px + tileSize / 2; const cy = py + tileSize / 2;
+
+                    ctx.save();
+                    const intensity = Math.min(1, this.damage / this.maxDamage);
+                    ctx.strokeStyle = `rgba(0, 255, 255, ${0.5 + intensity * 0.4})`;
+                    ctx.lineWidth = 2 + intensity * 1.5; ctx.shadowColor = '#00ffff'; ctx.shadowBlur = 8;
+                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(this.currentLaserTarget.x, this.currentLaserTarget.y); ctx.stroke();
+                    ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.shadowBlur = 3;
+                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(this.currentLaserTarget.x, this.currentLaserTarget.y); ctx.stroke();
+                    ctx.restore();
+                }
             }
         }
-
-        ctx.save();
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-        ctx.shadowBlur = 8;
-        ctx.shadowOffsetY = 4;
-
-        const recoilOffset = this.recoilTimer > 0 ? -3 : 0;
-
-        if (this.type === 'fire') {
-            ctx.fillStyle = '#212121'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
-            ctx.shadowColor = 'transparent';
-            ctx.fillStyle = '#d84315'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
-            ctx.save(); ctx.translate(cx, cy); ctx.rotate(this.rotationAngle);
-            ctx.fillStyle = '#ff5722'; ctx.fillRect(-6 + recoilOffset, -6, 16, 12); 
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(2 + recoilOffset, -8, 6, 4); 
-            if (this.recoilTimer > 4) {
-                ctx.fillStyle = '#ffeb3b'; ctx.fillRect(8, -4, 8, 8);
-            }
-            ctx.restore();
-            const flameBob = Math.sin(Date.now() * 0.015) * 2; ctx.fillStyle = '#ffeb3b';
-            ctx.beginPath(); ctx.arc(cx, py + 12 + flameBob, 4, 0, Math.PI * 2); ctx.fill();
-        } 
-        else if (this.type === 'laser') {
-            ctx.fillStyle = '#006064'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
-            ctx.shadowColor = 'transparent';
-            ctx.fillStyle = '#00bcd4'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
-            ctx.save(); ctx.translate(cx, cy); ctx.rotate(this.rotationAngle);
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(-8, -4, 16, 8); ctx.fillStyle = '#ff1744'; ctx.fillRect(-2, -8, 6, 3); ctx.restore();
-            const coreGlow = 0.5 + Math.sin(Date.now() * 0.01) * 0.5; ctx.fillStyle = `rgba(0, 255, 255, ${coreGlow})`; ctx.fillRect(cx - 3, cy - 3, 6, 6);
-        } 
-        else if (this.type === 'slow') {
-            ctx.fillStyle = '#1565c0'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
-            ctx.shadowColor = 'transparent';
-            ctx.fillStyle = '#42a5f5'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
-            ctx.save(); ctx.translate(cx, cy); 
-            ctx.rotate(this.slowCrystalAngle);
-            ctx.fillStyle = '#90caf9'; ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(8, 0); ctx.lineTo(0, 10); ctx.lineTo(-8, 0); ctx.closePath(); ctx.fill();
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(-2, -2, 4, 4); ctx.restore();
-        } 
-        else {
-            ctx.fillStyle = '#555555'; ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
-            ctx.shadowColor = 'transparent';
-            ctx.fillStyle = '#777777'; ctx.fillRect(px + 8, py + 8, tileSize - 16, tileSize - 16);
-            ctx.save(); ctx.translate(cx, cy); ctx.rotate(this.rotationAngle);
-            ctx.fillStyle = '#333333'; ctx.fillRect(-2 + recoilOffset, -4, 18, 8); 
-            ctx.fillStyle = '#00ff00'; ctx.fillRect(2 + recoilOffset, -8, 6, 4); 
-            if (this.recoilTimer > 4) {
-                ctx.fillStyle = '#ffffff'; ctx.fillRect(14, -3, 6, 6);
-            }
-            ctx.restore();
-        }
-        ctx.restore();
-
-        ctx.fillStyle = '#ffcc00';
-        for (let i = 0; i < this.level; i++) { ctx.fillRect(px + tileSize - 8 - (i * 5), py + 6, 3, 3); }
-    }
-
-    drawLaserBeam() {
-        if (this.type === 'laser' && this.currentLaserTarget && this.currentLaserTarget.hp > 0) {
-            const px = this.x * tileSize; const py = this.y * tileSize + headerHeight;
-            const cx = px + tileSize / 2; const cy = py + tileSize / 2;
-
-            ctx.save();
-            const intensity = Math.min(1, this.damage / this.maxDamage);
-            ctx.strokeStyle = `rgba(0, 255, 255, ${0.5 + intensity * 0.4})`;
-            ctx.lineWidth = 2 + intensity * 1.5; ctx.shadowColor = '#00ffff'; ctx.shadowBlur = 8;
-            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(this.currentLaserTarget.x, this.currentLaserTarget.y); ctx.stroke();
-            ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1; ctx.shadowBlur = 3;
-            ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(this.currentLaserTarget.x, this.currentLaserTarget.y); ctx.stroke();
-            ctx.restore();
-        }
-    }
-}
 
         class Projectile {
             constructor(x, y, target, damage, type) {
@@ -2151,7 +2144,7 @@
                     soundFX.click();
                     selectedTower = (selectedTower === existingTower) ? null : existingTower;
                     updateUpgradePanel();
-                } else if (grid[gridY][gridX] !== 1) { // NICHT auf dem Pfad bauen (Vegetation darf überbaut werden)
+                } else if (grid[gridY][gridX] !== 1) { 
                     let cost = 50;
                     if (selectedTowerType === 'laser') cost = 105;
                     if (selectedTowerType === 'slow') cost = 70;
@@ -2161,7 +2154,6 @@
                         soundFX.place();
                         towers.push(new Tower(gridX, gridY, selectedTowerType));
                         coins -= cost; selectedTower = null; updateUpgradePanel();
-                        // Optional: Das Feld wieder auf reines Gras setzen, damit der Baum beim Verkaufen des Turms weg ist.
                         grid[gridY][gridX] = 0; 
                     }
                 } else {
@@ -2170,14 +2162,13 @@
             }
         }
 
-        // --- ANGEPASSTE ÜBERPRÜFUNG BEIM ZIEHEN ---
         canvas.addEventListener('pointerdown', (e) => { 
-    if (gameOver) return; 
-    isDragging = true; 
-    const c = getGridCoordinates(e); 
-    dragGridX = c.gridX; 
-    dragGridY = c.gridY; 
-});
+            if (gameOver) return; 
+            isDragging = true; 
+            const c = getGridCoordinates(e); 
+            dragGridX = c.gridX; 
+            dragGridY = c.gridY; 
+        });
         canvas.addEventListener('pointermove', (e) => { if (!isDragging || gameOver) return; const c = getGridCoordinates(e); dragGridX = c.gridX; dragGridY = c.gridY; });
         canvas.addEventListener('pointerup', (e) => { if (gameOver) return; if (isDragging) { const c = getGridCoordinates(e); tryPlaceTower(c.gridX, c.gridY); isDragging = false; dragGridX = -1; dragGridY = -1; } });
 
@@ -2185,13 +2176,15 @@
             constructor(startX, startY, type, forcedNodeIndex = 1) {
                 this.x = startX * tileSize + tileSize / 2; this.y = startY * tileSize + headerHeight + tileSize / 2;
                 this.type = type; this.targetIndex = forcedNodeIndex; this.reachedEnd = false; this.currentSlow = 0; this.speedBoost = 0; this.isLasered = false; this.animTimer = Math.random() * 100;
+                this.lastHp = 0;
+                this.hitFlashTimer = 0;
 
                 if (type === 'boss') { 
                     this.name = 'Wither Boss'; 
                     this.baseSpeed = 0.375; 
                     const bm = 1 + ((wave - 10) / 10) * 0.6; 
                     this.maxHp = Math.round(7125 * Math.max(1, bm)); 
-                    this.size = 42; 
+                    this.size = 44; 
                     this.reward = 250; 
                 } 
                 else if (type === 'minicreeper') {
@@ -2208,9 +2201,16 @@
                 else if (type === 'pig') { this.name = 'Pig'; this.baseSpeed = 1.5 + (wave * 0.045); this.maxHp = 12 + (wave * 7); this.size = 22; this.reward = 5; } 
                 else { this.name = 'Zombie'; this.baseSpeed = 0.975 + (wave * 0.035); this.maxHp = 25 + (wave * 14); this.size = 26; this.reward = 7; }
                 this.hp = this.maxHp;
+                this.lastHp = this.hp;
             }
 
             update() {
+                if (this.hp < this.lastHp) {
+                    this.hitFlashTimer = 6; // Hit-Flash Dauer in Frames
+                }
+                this.lastHp = this.hp;
+                if (this.hitFlashTimer > 0) this.hitFlashTimer--;
+
                 let netSpeed = (this.baseSpeed * (1 + this.speedBoost)) * (1 - this.currentSlow);
                 
                 this.animTimer += netSpeed;
@@ -2230,72 +2230,55 @@
             draw(ctx) {
                 ctx.save();
                 ctx.translate(this.x, this.y);
-                const bounce = Math.sin(this.animTimer * 0.35) * 3;
+                
+                // Schwebe-Effekt für den Wither-Boss oder normaler Bounce
+                const floatOffset = (this.type === 'boss') ? Math.sin(this.animTimer * 0.2) * 4 : 0;
+                const bounce = (this.type === 'boss') ? floatOffset : Math.sin(this.animTimer * 0.35) * 3;
                 ctx.translate(0, bounce);
 
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
-                ctx.shadowBlur = 6;
-                ctx.shadowOffsetY = 4;
+                if (this.type !== 'boss') {
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowOffsetY = 4;
+                }
 
-                const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.5); // Jetzt 50%
+                const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.5);
 
                 if (this.type === 'pig') {
                     ctx.shadowColor = 'transparent';
-                    
-                    // Hintere Beine (Dunkelpink, gibt 3D-Tiefe)
                     ctx.fillStyle = '#D81B60'; 
                     ctx.fillRect(-6, 6, 3, 4); 
                     ctx.fillRect(4, 6, 3, 4);
-                    
-                    // Körper
                     ctx.fillStyle = '#F48FB1'; 
                     ctx.fillRect(-10, -4, 16, 10);
-                    
-                    // Vordere Beine (Helleres Pink)
                     ctx.fillStyle = '#F06292'; 
                     ctx.fillRect(-10, 6, 3, 5); 
                     ctx.fillRect(1, 6, 3, 5);
-                    
-                    // Kopf
                     ctx.fillStyle = '#F48FB1'; 
                     ctx.fillRect(4, -6, 8, 8);
-                    
-                    // Schnauze (Hebt sich farblich ab)
                     ctx.fillStyle = '#E91E63'; 
                     ctx.fillRect(12, -3, 3, 4);
-                    // Nasenloch
                     ctx.fillStyle = '#C2185B'; 
                     ctx.fillRect(13, -2, 2, 2); 
-                    
-                    // Auge
                     ctx.fillStyle = '#111111'; 
-                    ctx.fillRect(8, -4, 2, 2); // Pupille
+                    ctx.fillRect(8, -4, 2, 2); 
                     ctx.fillStyle = '#FFFFFF'; 
-                    ctx.fillRect(7, -4, 1, 2); // Weiß
+                    ctx.fillRect(7, -4, 1, 2); 
                 } else if (this.type === 'skeleton') {
-                    // Schädel
                     ctx.fillStyle = '#e0e0e0'; ctx.fillRect(-7, -18, 14, 12);
                     ctx.shadowColor = 'transparent';
-                    // Augenhöhlen und Nasen-/Mundpartie
                     ctx.fillStyle = '#111111'; 
-                    ctx.fillRect(-5, -15, 3, 3); // Linkes Auge
-                    ctx.fillRect(2, -15, 3, 3);  // Rechtes Auge (korrigiert)
-                    ctx.fillRect(-2, -11, 4, 3); // Nase/Mund
-                    
-                    // Brustkorb (Wirbelsäule)
+                    ctx.fillRect(-5, -15, 3, 3); 
+                    ctx.fillRect(2, -15, 3, 3);  
+                    ctx.fillRect(-2, -11, 4, 3); 
                     ctx.fillStyle = '#dcdcdc'; ctx.fillRect(-4, -6, 8, 14);
-                    // Rippen-Zwischenräume (für den Knochen-Look)
                     ctx.fillStyle = '#222222'; 
                     ctx.fillRect(-4, -3, 8, 2); 
                     ctx.fillRect(-4, 1, 8, 2);
                     ctx.fillRect(-4, 5, 8, 2);
-                    
-                    // Dünne Knochenarme
                     ctx.fillStyle = '#dcdcdc'; 
                     ctx.fillRect(-9, -6, 4, 12); 
                     ctx.fillRect(5, -6, 4, 12);
-                    
-                    // Dünne Knochenbeine
                     ctx.fillStyle = '#a9a9a9'; 
                     ctx.fillRect(-4, 8, 3, 8); 
                     ctx.fillRect(1, 8, 3, 8);
@@ -2327,66 +2310,99 @@
                     ctx.fillStyle = isGolemRaging ? '#ffffff' : '#d32f2f'; ctx.fillRect(-2, -2, 4, 4);
                     ctx.fillStyle = isGolemRaging ? '#ffeb3b' : '#212121'; ctx.fillRect(-8, -8, 4, 4); ctx.fillRect(4, -8, 4, 4);
                 } else if (this.type === 'boss') {
-                    ctx.fillStyle = '#111111'; ctx.fillRect(-16, -12, 32, 24);
-                    ctx.shadowColor = 'transparent';
-                    ctx.fillStyle = '#555555'; ctx.fillRect(-14, -10, 28, 20);
-                    const headBob = Math.sin(Date.now() * 0.015) * 4;
-                    ctx.fillStyle = '#333333'; ctx.fillRect(-18, -24 + headBob, 10, 10); ctx.fillRect(-6, -28 + headBob, 12, 12); ctx.fillRect(8, -24 + headBob, 10, 10);
-                    ctx.fillStyle = '#ffcc00'; ctx.fillRect(-16, -22 + headBob, 6, 4); ctx.fillRect(10, -22 + headBob, 6, 4);
-                    ctx.fillStyle = '#ff1744'; ctx.fillRect(-15, -21 + headBob, 3, 3); ctx.fillStyle = '#ff1744'; ctx.fillRect(-3, -24 + headBob, 4, 4); ctx.fillStyle = '#ff1744'; ctx.fillRect(10, -21 + headBob, 3, 3);
+                    // --- HOCHWERTIGER WITHER BOSS ---
+                    ctx.shadowColor = '#8a2be2'; // Mystischer Violett-Glow
+                    ctx.shadowBlur = 18;
+
+                    // Haupttorso & Rippenstruktur
+                    ctx.fillStyle = '#181818'; 
+                    ctx.fillRect(-18, -14, 36, 26);
+                    ctx.fillStyle = '#2b2b2b'; 
+                    ctx.fillRect(-14, -10, 28, 18);
+                    
+                    // Skelett-Rippendetails im Torso
+                    ctx.fillStyle = '#111111';
+                    ctx.fillRect(-10, -6, 20, 2);
+                    ctx.fillRect(-10, -2, 20, 2);
+                    ctx.fillRect(-10, 2, 20, 2);
+
+                    // Seelen-Aura Kern im Zentrum der Brust
+                    const corePulse = 0.5 + Math.sin(Date.now() * 0.01) * 0.5;
+                    ctx.fillStyle = `rgba(186, 85, 211, ${0.4 + corePulse * 0.4})`;
+                    ctx.fillRect(-4, -4, 8, 8);
+
+                    // Unabhängig schwebende Seitenköpfe (mit sanftem, versetztem Bobbing)
+                    const sideHeadBob = Math.sin(Date.now() * 0.012) * 3;
+                    const mainHeadBob = Math.sin(Date.now() * 0.015 + 1) * 4;
+
+                    // Linker kleiner Kopf
+                    ctx.fillStyle = '#222222';
+                    ctx.fillRect(-24, -20 + sideHeadBob, 10, 10);
+                    ctx.fillStyle = '#d500f9'; // Leuchtendes Auge
+                    ctx.fillRect(-22, -18 + sideHeadBob, 3, 3);
+
+                    // Rechter kleiner Kopf
+                    ctx.fillStyle = '#222222';
+                    ctx.fillRect(14, -20 - sideHeadBob, 10, 10);
+                    ctx.fillStyle = '#d500f9';
+                    ctx.fillRect(19, -18 - sideHeadBob, 3, 3);
+
+                    // Hauptkopf (Mitte)
+                    ctx.fillStyle = '#2a2a2a';
+                    ctx.fillRect(-8, -26 + mainHeadBob, 16, 14);
+                    // Stirn / Hörner-Ansatz
+                    ctx.fillStyle = '#1f1f1f';
+                    ctx.fillRect(-10, -28 + mainHeadBob, 20, 3);
+                    // Rote/Violette Glühaugen
+                    ctx.fillStyle = '#ff1744';
+                    ctx.fillRect(-5, -22 + mainHeadBob, 3, 3);
+                    ctx.fillRect(2, -22 + mainHeadBob, 3, 3);
+                    // Knidriger Mund
+                    ctx.fillStyle = '#0a0a0a';
+                    ctx.fillRect(-3, -16 + mainHeadBob, 6, 2);
                 } else { // Zombie
-                    // Kopf
                     ctx.fillStyle = '#388E3C'; ctx.fillRect(-6, -18, 12, 12);
                     ctx.shadowColor = 'transparent';
-                    
-                    // Augen und Zombie-Mund
                     ctx.fillStyle = '#111111'; 
-                    ctx.fillRect(-5, -14, 3, 3); // Linkes Auge
-                    ctx.fillRect(2, -14, 3, 3);  // Rechtes Auge
+                    ctx.fillRect(-5, -14, 3, 3); 
+                    ctx.fillRect(2, -14, 3, 3);  
                     ctx.fillStyle = '#1B5E20'; 
-                    ctx.fillRect(-2, -10, 4, 2); // Mund/Nase
-                    
-                    // Ärmel (Blau) und Arme (Grün)
+                    ctx.fillRect(-2, -10, 4, 2); 
                     ctx.fillStyle = '#1976D2'; 
-                    ctx.fillRect(-10, -6, 4, 4); // Ärmel links
-                    ctx.fillRect(6, -6, 4, 4);   // Ärmel rechts
+                    ctx.fillRect(-10, -6, 4, 4); 
+                    ctx.fillRect(6, -6, 4, 4);   
                     ctx.fillStyle = '#388E3C'; 
-                    ctx.fillRect(-10, -2, 4, 6); // Arm links
-                    ctx.fillRect(6, -2, 4, 6);   // Arm rechts
-                    
-                    // Körper (Hemd)
+                    ctx.fillRect(-10, -2, 4, 6); 
+                    ctx.fillRect(6, -2, 4, 6);   
                     ctx.fillStyle = '#1976D2'; ctx.fillRect(-6, -6, 12, 12);
-                    
-                    // Hosen (Dunkelblau/Indigo)
                     ctx.fillStyle = '#283593'; ctx.fillRect(-6, 6, 12, 6);
-                    
-                    // Schuhe
                     ctx.fillStyle = '#424242'; 
                     ctx.fillRect(-6, 10, 4, 2); 
                     ctx.fillRect(2, 10, 4, 2);
+                }
+
+                // Wenn getroffen: Komplett weiß aufblitzen lassen für Feedback
+                if (this.hitFlashTimer > 0) {
+                    ctx.globalCompositeOperation = 'source-atop';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.fillRect(-30, -35, 60, 70);
                 }
 
                 ctx.restore();
 
                 if (isGolemRaging) {
                     ctx.save();
-                    // 2.5 * tileSize (40) = 100 Pixel Radius
                     const buffRadius = 100; 
-                    const auraPulse = buffRadius + Math.sin(Date.now() * 0.015) * 4; // Leichtes Pulsieren
-                    
-                    // Leicht rote Fläche innerhalb des Radius
+                    const auraPulse = buffRadius + Math.sin(Date.now() * 0.015) * 4; 
                     ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, auraPulse, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Roter Rand, der den Radius klar abgrenzt
                     ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
                     ctx.lineWidth = 2;
                     ctx.shadowColor = '#ff0000';
                     ctx.shadowBlur = 12;
                     ctx.stroke();
-                    
                     ctx.restore();
                 }
 
@@ -2399,97 +2415,85 @@
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, pulse, 0, Math.PI * 2);
                     ctx.fill();
-
                     ctx.fillStyle = '#ffffff';
                     ctx.shadowBlur = 4;
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
                     ctx.fill();
-
                     ctx.restore();
                     this.isLasered = false;
                 }
 
                 const hpPercent = Math.max(0, this.hp / this.maxHp);
                 const barWidth = this.type === 'boss' ? 48 : 24;
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(this.x - barWidth/2, this.y - (this.size/2 + 10), barWidth, 5);
-                ctx.fillStyle = this.type === 'boss' ? '#d500f9' : '#00ff00'; ctx.fillRect(this.x - barWidth/2, this.y - (this.size/2 + 10), barWidth * hpPercent, 5);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'; ctx.fillRect(this.x - barWidth/2, this.y - (this.size/2 + 12), barWidth, 5);
+                ctx.fillStyle = this.type === 'boss' ? '#d500f9' : '#00ff00'; ctx.fillRect(this.x - barWidth/2, this.y - (this.size/2 + 12), barWidth * hpPercent, 5);
             }
         }
 
-	class WaveBanner {
-    constructor(waveNum, killsCount) {
-        this.waveNum = waveNum;
-        this.killsCount = killsCount;
-        this.x = GAME_WIDTH / 2;
-        this.y = GAME_HEIGHT / 2 - 50;
-        this.alpha = 0;
-        this.scale = 0.2;
-        this.timer = 0;
-        this.duration = 300; // Bleibt dank gameSpeed-Anpassung konstant lang
-    }
+        class WaveBanner {
+            constructor(waveNum, killsCount) {
+                this.waveNum = waveNum;
+                this.killsCount = killsCount;
+                this.x = GAME_WIDTH / 2;
+                this.y = GAME_HEIGHT / 2 - 50;
+                this.alpha = 0;
+                this.scale = 0.2;
+                this.timer = 0;
+                this.duration = 300; 
+            }
 
-    update() {
-        this.timer += 1 / gameSpeed;
-        
-        // Sanfter Einfliege-Effekt mit elastischem Overshoot (Bounce)
-        if (this.timer < 25) {
-            const progress = this.timer / 25;
-            // Elastische Formel für das Heranzoomen
-            this.scale = 1 + Math.sin(progress * Math.PI * 1.5) * 0.2 * (1 - progress);
-            this.alpha = Math.min(1, progress * 1.5);
-        } else if (this.timer > this.duration - 25) {
-            // Ausblenden
-            const fadeProgress = (this.timer - (this.duration - 25)) / 25;
-            this.alpha = Math.max(0, 1 - fadeProgress);
-            this.scale = 1 - fadeProgress * 0.1;
-        } else {
-            this.alpha = 1.0;
-            this.scale = 1.0;
-            // Ganz sanft nach oben schweben
-            this.y -= 0.12; 
+            update() {
+                this.timer += 1 / gameSpeed;
+                
+                if (this.timer < 25) {
+                    const progress = this.timer / 25;
+                    this.scale = 1 + Math.sin(progress * Math.PI * 1.5) * 0.2 * (1 - progress);
+                    this.alpha = Math.min(1, progress * 1.5);
+                } else if (this.timer > this.duration - 25) {
+                    const fadeProgress = (this.timer - (this.duration - 25)) / 25;
+                    this.alpha = Math.max(0, 1 - fadeProgress);
+                    this.scale = 1 - fadeProgress * 0.1;
+                } else {
+                    this.alpha = 1.0;
+                    this.scale = 1.0;
+                    this.y -= 0.12; 
+                }
+            }
+
+            draw(ctx) {
+                if (this.alpha <= 0) return;
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.translate(this.x, this.y);
+                ctx.scale(this.scale, this.scale);
+
+                ctx.shadowColor = '#FFD700';
+                ctx.shadowBlur = 15;
+
+                ctx.fillStyle = 'rgba(15, 15, 20, 0.92)';
+                ctx.strokeStyle = '#FFD700'; 
+                ctx.lineWidth = 3;
+                ctx.fillRect(-190, -40, 380, 80);
+                ctx.strokeRect(-190, -40, 380, 80);
+
+                ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(-184, -34, 368, 68);
+
+                ctx.font = 'bold 18px monospace';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#FFD700';
+                ctx.fillText(`★ WAVE ${this.waveNum} COMPLETED ★`, 0, -12);
+
+                ctx.font = '13px monospace';
+                ctx.fillStyle = '#E0E0E0';
+                ctx.fillText(`${this.killsCount} enemies successfully eliminated`, 0, 14);
+
+                ctx.restore();
+            }
         }
-    }
-
-    draw(ctx) {
-        if (this.alpha <= 0) return;
-        ctx.save();
-        ctx.globalAlpha = Math.max(0, this.alpha);
-        ctx.translate(this.x, this.y);
-        ctx.scale(this.scale, this.scale);
-
-        // Äußerer Glow-Effekt
-        ctx.shadowColor = '#FFD700';
-        ctx.shadowBlur = 15;
-
-        // Banner-Hintergrund (Edles Dunkelgrau/Gold-Design im Retro-Look)
-        ctx.fillStyle = 'rgba(15, 15, 20, 0.92)';
-        ctx.strokeStyle = '#FFD700'; // Edler Goldton
-        ctx.lineWidth = 3;
-        ctx.fillRect(-190, -40, 380, 80);
-        ctx.strokeRect(-190, -40, 380, 80);
-
-        // Innerer dekorativer Rahmen
-        ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(-184, -34, 368, 68);
-
-        // Text: Welle X completed (Gold & Leuchtend)
-	// Text: Welle abgeschlossen (Englisch)
-        ctx.font = 'bold 18px monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = '#FFD700';
-        ctx.fillText(`★ WELLE ${this.waveNum} COMPLETED ★`, 0, -12);
-
-        // Text: Anzahl gekillter Gegner (Englisch)
-        ctx.font = '13px monospace';
-        ctx.fillStyle = '#E0E0E0';
-        ctx.fillText(`${this.killsCount} enemies successfully eliminated`, 0, 14);
-
-        ctx.restore();
-    }
-}
 
         function spawnEnemyRandomly() {
             const rand = Math.random(); 
@@ -2512,23 +2516,18 @@
             enemies.push(new Enemy(pathNodes[0].x, pathNodes[0].y, type));
         }
 
-        // --- ZEICHEN-FUNKTIONEN FÜR VEGETATION (Verbessert) ---
         function drawTree(px, py) {
-            // Stamm (mit leichtem Schatten links)
             ctx.fillStyle = '#4E342E'; ctx.fillRect(px + 16, py + 22, 8, 14);
             ctx.fillStyle = '#3E2723'; ctx.fillRect(px + 16, py + 22, 3, 14); 
 
-            // Baumkrone Schatten / Basis
             ctx.fillStyle = '#1B5E20'; 
             ctx.fillRect(px + 6, py + 6, 28, 16); 
             ctx.fillRect(px + 10, py + 2, 20, 22);
 
-            // Baumkrone Hauptfarbe
             ctx.fillStyle = '#2E7D32'; 
             ctx.fillRect(px + 8, py + 8, 24, 12); 
             ctx.fillRect(px + 12, py + 4, 16, 18);
 
-            // Baumkrone Highlights (für mehr Tiefe)
             ctx.fillStyle = '#43A047'; 
             ctx.fillRect(px + 10, py + 6, 8, 4); 
             ctx.fillRect(px + 14, py + 4, 4, 2);
@@ -2536,32 +2535,27 @@
         }
 
         function drawBush(px, py) {
-            // Busch Schatten / Äußerer Bereich für mehr Volumen
             ctx.fillStyle = '#1B5E20'; 
             ctx.fillRect(px + 8, py + 14, 24, 20); 
             ctx.fillRect(px + 4, py + 20, 32, 12); 
             ctx.fillRect(px + 12, py + 12, 16, 4);
 
-            // Busch Hauptfarbe (Blätterwerk)
             ctx.fillStyle = '#2E7D32'; 
             ctx.fillRect(px + 10, py + 16, 20, 16); 
             ctx.fillRect(px + 6, py + 22, 28, 8);
             ctx.fillRect(px + 14, py + 14, 12, 4);
 
-            // Busch Highlights (für Textur und Fluffigkeit)
             ctx.fillStyle = '#43A047'; 
             ctx.fillRect(px + 14, py + 14, 6, 2);
             ctx.fillRect(px + 10, py + 18, 4, 4);
             ctx.fillRect(px + 24, py + 22, 6, 2);
             ctx.fillRect(px + 8, py + 24, 2, 2);
 
-            // Lila Früchte/Beeren (Dunkle Basis)
             ctx.fillStyle = '#6A1B9A'; 
-            ctx.fillRect(px + 10, py + 24, 4, 4); // Beere links
-            ctx.fillRect(px + 24, py + 16, 4, 4); // Beere rechts oben
-            ctx.fillRect(px + 18, py + 26, 4, 4); // Beere unten mitte
+            ctx.fillRect(px + 10, py + 24, 4, 4); 
+            ctx.fillRect(px + 24, py + 16, 4, 4); 
+            ctx.fillRect(px + 18, py + 26, 4, 4); 
 
-            // Lila Früchte/Beeren (Heller Glanzpunkt für Tiefe)
             ctx.fillStyle = '#E040FB'; 
             ctx.fillRect(px + 10, py + 24, 2, 2); 
             ctx.fillRect(px + 24, py + 16, 2, 2); 
@@ -2569,46 +2563,39 @@
         }
 
         function drawFlower(px, py) {
-            // Stängel (unten dunkler, oben heller für Tiefe)
             ctx.fillStyle = '#2E7D32'; 
             ctx.fillRect(px + 19, py + 22, 2, 12);
             ctx.fillStyle = '#4CAF50'; 
             ctx.fillRect(px + 19, py + 18, 2, 6);
 
-            // Blätter (gebogene Form mit Highlights an den Spitzen)
             ctx.fillStyle = '#388E3C'; 
-            ctx.fillRect(px + 15, py + 26, 4, 2); // Blatt links Basis
-            ctx.fillRect(px + 21, py + 28, 4, 2); // Blatt rechts Basis
+            ctx.fillRect(px + 15, py + 26, 4, 2); 
+            ctx.fillRect(px + 21, py + 28, 4, 2); 
             
             ctx.fillStyle = '#4CAF50'; 
-            ctx.fillRect(px + 13, py + 24, 2, 2); // Blatt links Spitze
-            ctx.fillRect(px + 15, py + 24, 2, 2); // Übergang
-            ctx.fillRect(px + 25, py + 26, 2, 2); // Blatt rechts Spitze
+            ctx.fillRect(px + 13, py + 24, 2, 2); 
+            ctx.fillRect(px + 15, py + 24, 2, 2); 
+            ctx.fillRect(px + 25, py + 26, 2, 2); 
 
-            // Blüte Schatten (Dunkles Magenta für Volumen)
             ctx.fillStyle = '#AD1457'; 
             ctx.fillRect(px + 14, py + 14, 12, 10);
-            ctx.fillRect(px + 16, py + 24, 8, 2); // Unterer Schattenrand
+            ctx.fillRect(px + 16, py + 24, 8, 2); 
 
-            // Blüte Hauptfarbe (Kräftiges Pink/Rose)
             ctx.fillStyle = '#D81B60'; 
-            ctx.fillRect(px + 14, py + 12, 12, 10); // Zentraler Teil
-            ctx.fillRect(px + 12, py + 14, 16, 6);  // Äußere Ausdehnung
+            ctx.fillRect(px + 14, py + 12, 12, 10); 
+            ctx.fillRect(px + 12, py + 14, 16, 6);  
 
-            // Blüte Highlights (Helles Rosa für Lichteinfall)
             ctx.fillStyle = '#F48FB1'; 
-            ctx.fillRect(px + 14, py + 12, 4, 2); // Highlight oben links
-            ctx.fillRect(px + 22, py + 12, 4, 2); // Highlight oben rechts
-            ctx.fillRect(px + 12, py + 14, 2, 4); // Highlight Kante links
+            ctx.fillRect(px + 14, py + 12, 4, 2); 
+            ctx.fillRect(px + 22, py + 12, 4, 2); 
+            ctx.fillRect(px + 12, py + 14, 2, 4); 
 
-            // Blütenmitte (Schattenbereich unten/orange)
             ctx.fillStyle = '#F57F17'; 
             ctx.fillRect(px + 18, py + 16, 4, 4);
 
-            // Blütenmitte (Leuchtendes Gelb oben)
             ctx.fillStyle = '#FFEE58'; 
             ctx.fillRect(px + 18, py + 16, 4, 2);
-            ctx.fillRect(px + 18, py + 18, 2, 2); // Kleine Struktur in der Mitte
+            ctx.fillRect(px + 18, py + 18, 2, 2); 
         }
 
         function drawGrass(px, py, x, y) {
@@ -2656,7 +2643,6 @@
             ctx.fillStyle = colorCore; ctx.fillRect(px + 18, py + 18, 4, 18);
         }
 
-        // --- ANGEPASSTE DRAW MAP FUNKTION ---
         function drawMap() {
             for (let y = 0; y < rows; y++) {
                 for (let x = 0; x < cols; x++) {
@@ -2665,7 +2651,6 @@
                         drawStonePath(px, py); 
                     } else {
                         drawGrass(px, py, x, y);
-                        // Zeichne Vegetation, falls vorhanden
                         if (grid[y][x] === 2) drawTree(px, py);
                         else if (grid[y][x] === 3) drawBush(px, py);
                         else if (grid[y][x] === 4) drawFlower(px, py);
@@ -2732,7 +2717,7 @@
             const golems = enemies.filter(e => e.type === 'golem');
 
             for (let golem of golems) {
-                if (golem.hp <= golem.maxHp * 0.5) { // Jetzt bei 50% HP
+                if (golem.hp <= golem.maxHp * 0.5) { 
                     for (let other of enemies) {
                         const dist = Math.hypot(other.x - golem.x, other.y - golem.y);
                         if (dist <= golemBuffRadius) {
@@ -2769,9 +2754,8 @@
                 else if (enemiesToSpawn === 0 && bossesRemainingToSpawn === 0 && enemies.length === 0) {
                     waveInProgress = false; 
 
-		    // <--- HIER DAS BANNER AUSLÖSEN:
-		    waveBanners.push(new WaveBanner(wave, killsThisWave));
-		    soundFX.waveComplete(); // Optional ein netter Soundeffekt dazu
+                    waveBanners.push(new WaveBanner(wave, killsThisWave));
+                    soundFX.waveComplete(); 
 
                     startWaveBtn.disabled = false; 
                     startWaveBtn.innerText = `Start Wave ${wave + 1}`;
@@ -2784,7 +2768,7 @@
             for (let i = smokeParticles.length - 1; i >= 0; i--) { smokeParticles[i].update(); if (smokeParticles[i].alpha <= 0) smokeParticles.splice(i, 1); }
             for (let i = gibs.length - 1; i >= 0; i--) { gibs[i].update(); if (gibs[i].alpha <= 0) gibs.splice(i, 1); }
             for (let i = floatingTexts.length - 1; i >= 0; i--) { floatingTexts[i].update(); if (floatingTexts[i].alpha <= 0) floatingTexts.splice(i, 1); }
-	    for (let i = waveBanners.length - 1; i >= 0; i--) { waveBanners[i].update(); if (waveBanners[i].timer >= waveBanners[i].duration) waveBanners.splice(i, 1); }
+            for (let i = waveBanners.length - 1; i >= 0; i--) { waveBanners[i].update(); if (waveBanners[i].timer >= waveBanners[i].duration) waveBanners.splice(i, 1); }
 
             for (let i = enemies.length - 1; i >= 0; i--) {
                 const enemy = enemies[i]; enemy.update();
@@ -2796,17 +2780,10 @@
                         explosions.push(new Explosion(enemy.x, enemy.y));
                         for (let m = 0; m < 2; m++) {
                             const mini = new Enemy(0, 0, 'minicreeper', enemy.targetIndex);
-                            
-                            // Versetzt die Mini-Creeper deutlich:
-                            // m === 0 geht nach oben-links (-12, -12)
-                            // m === 1 geht nach unten-rechts (+12, +12)
                             const baseOffsetX = (m === 0) ? -12 : 12;
                             const baseOffsetY = (m === 0) ? -12 : 12;
-                            
-                            // Plus ein wenig Zufall, damit es organischer aussieht
                             mini.x = enemy.x + baseOffsetX + (Math.random() - 0.5) * 8;
                             mini.y = enemy.y + baseOffsetY + (Math.random() - 0.5) * 8;
-                            
                             enemies.push(mini);
                         }
                     }
@@ -2833,12 +2810,11 @@
                 drawRangeCircle(cx, cy, selectedTower.range, color);
             }
 
-            // --- ANGEPASSTE PRÜFUNG: NICHT AUF DEM PFAD UND KEIN TURM VORHANDEN ---
             const targetHasTower = towers.some(t => t.x === dragGridX && t.y === dragGridY);
             if (isDragging && dragGridX >= 0 && dragGridX < cols && dragGridY >= 0 && dragGridY < rows && grid[dragGridY][dragGridX] !== 1 && !targetHasTower) {
                 const cx = dragGridX * tileSize + tileSize / 2; const cy = dragGridY * tileSize + headerHeight + tileSize / 2;
                 let previewRange = 95; let previewColor = 'rgba(255, 204, 0, 0.25)';
-                if (selectedTowerType === 'laser') { previewRange = 110; previewColor = 'rgba(0, 255, 255, 0.25)'; } // Hier direkt auf 110 angepasst
+                if (selectedTowerType === 'laser') { previewRange = 110; previewColor = 'rgba(0, 255, 255, 0.25)'; } 
                 else if (selectedTowerType === 'slow') { previewRange = 100; previewColor = 'rgba(144, 202, 249, 0.25)'; } 
                 else if (selectedTowerType === 'fire') { previewRange = 100; previewColor = 'rgba(255, 87, 34, 0.25)'; }
                 drawRangeCircle(cx, cy, previewRange, previewColor);
@@ -2851,7 +2827,7 @@
             for (let enemy of enemies) enemy.draw(ctx);
             for (let tower of towers) { if (tower.drawLaserBeam) tower.drawLaserBeam(); }
             for (let ft of floatingTexts) ft.draw(ctx);
-	    for (let banner of waveBanners) banner.draw(ctx);
+            for (let banner of waveBanners) banner.draw(ctx);
 
             drawUIHeader();
             drawBossWarning();
