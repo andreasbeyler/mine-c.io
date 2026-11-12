@@ -1645,23 +1645,24 @@
             }
         });
 
-        speedBtn.addEventListener('click', (e) => {
-            // Verhindert, dass das Event irgendwo im Canvas hängen bleibt
-            e.stopPropagation();
-            soundFX.click();
+        speedBtn.addEventListener('pointerdown', (e) => {
+    	// Verhindert, dass das Event irgendwo im Canvas hängen bleibt
+    	e.stopPropagation();
+    	e.preventDefault();
+    	soundFX.click();
 
-            // Direktes Durchschalten der Geschwindigkeiten beim ersten Klick
-            if (gameSpeed === 0.75) {
-                gameSpeed = 1.5;
-                speedBtn.innerText = '2x';
-            } else if (gameSpeed === 1.5) {
-                gameSpeed = 2.25;
-                speedBtn.innerText = '3x';
-            } else {
-                gameSpeed = 0.75;
-                speedBtn.innerText = '1x';
-            }
-        });
+    	// Direktes Durchschalten der Geschwindigkeiten beim ersten Klick
+    	if (gameSpeed === 0.75 || gameSpeed === 1) {
+   	     gameSpeed = 1.5;
+   	     speedBtn.innerText = '2x';
+   	 } else if (gameSpeed === 1.5) {
+   	     gameSpeed = 2.25;
+   	     speedBtn.innerText = '3x';
+   	 } else {
+    	    gameSpeed = 0.75;
+    	    speedBtn.innerText = '1x';
+   	 }
+	});
 
         soundBtn.addEventListener('click', () => {
             soundEnabled = !soundEnabled;
