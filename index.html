@@ -676,6 +676,15 @@
                 </div>
             </div>
 
+	    <div class="threat-item">
+                <canvas class="threat-icon-canvas" id="iconShielded" width="32" height="32"></canvas>
+                <div class="threat-info">
+                    <div class="threat-name">Shield Tank</div>
+                    <div class="threat-desc">An armored robot protected by an energy shield. It almost completely resists laser attacks! Use basic projectiles or fire to stop it.</div>
+                    <div class="threat-stats">120 HP • 80% Laser Resistance • $18 Reward</div>
+                </div>
+            </div>
+
             <div class="threat-item">
                 <canvas class="threat-icon-canvas" id="iconBoss" width="32" height="32"></canvas>
                 <div class="threat-info">
@@ -1089,6 +1098,34 @@
             ctxB.fillStyle = '#ff1744'; ctxB.fillRect(6, 6, 2, 2);
             ctxB.fillStyle = '#ff1744'; ctxB.fillRect(15, 4, 2, 2);
             ctxB.fillStyle = '#ff1744'; ctxB.fillRect(22, 6, 2, 2);
+
+	    // Shield Tank Icon
+            const ctxShield = setupIconCanvas('iconShielded', 32);
+            // Äußerer Schild
+            ctxShield.fillStyle = 'rgba(0, 255, 255, 0.25)';
+            ctxShield.fillRect(4, 4, 24, 24);
+            ctxShield.strokeStyle = 'rgba(0, 255, 255, 0.8)';
+            ctxShield.lineWidth = 1;
+            ctxShield.strokeRect(4, 4, 24, 24);
+            
+            // Schild-Projektoren an den Ecken
+            ctxShield.fillStyle = '#ffffff';
+            ctxShield.fillRect(3, 3, 3, 3);
+            ctxShield.fillRect(26, 3, 3, 3);
+            ctxShield.fillRect(3, 26, 3, 3);
+            ctxShield.fillRect(26, 26, 3, 3);
+
+            // Roboter-Kern
+            ctxShield.fillStyle = '#263238'; ctxShield.fillRect(9, 9, 14, 14);
+            ctxShield.fillStyle = '#455a64'; ctxShield.fillRect(11, 11, 10, 10);
+            
+            // Sensoren / Augen
+            ctxShield.fillStyle = '#000000'; ctxShield.fillRect(12, 13, 3, 2); ctxShield.fillRect(17, 13, 3, 2);
+            ctxShield.fillStyle = '#00ffff'; ctxShield.fillRect(13, 13, 1, 1); ctxShield.fillRect(18, 13, 1, 1);
+            
+            // Energie-Zentrum
+            ctxShield.fillStyle = '#ffffff'; ctxShield.fillRect(14, 17, 4, 3);
+            ctxShield.fillStyle = '#00bcd4'; ctxShield.fillRect(15, 18, 2, 1);
         }
         drawThreatIcons();
 
