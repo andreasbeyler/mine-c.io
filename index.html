@@ -1099,33 +1099,37 @@
             ctxB.fillStyle = '#ff1744'; ctxB.fillRect(15, 4, 2, 2);
             ctxB.fillStyle = '#ff1744'; ctxB.fillRect(22, 6, 2, 2);
 
-	    // Shield Tank Icon
+	    // Shield Tank Icon (Cyber-Knight)
             const ctxShield = setupIconCanvas('iconShielded', 32);
-            // Äußerer Schild
-            ctxShield.fillStyle = 'rgba(0, 255, 255, 0.25)';
-            ctxShield.fillRect(4, 4, 24, 24);
-            ctxShield.strokeStyle = 'rgba(0, 255, 255, 0.8)';
-            ctxShield.lineWidth = 1;
-            ctxShield.strokeRect(4, 4, 24, 24);
             
-            // Schild-Projektoren an den Ecken
-            ctxShield.fillStyle = '#ffffff';
-            ctxShield.fillRect(3, 3, 3, 3);
-            ctxShield.fillRect(26, 3, 3, 3);
-            ctxShield.fillRect(3, 26, 3, 3);
-            ctxShield.fillRect(26, 26, 3, 3);
+            // Füße
+            ctxShield.fillStyle = '#111111';
+            ctxShield.fillRect(11, 23, 3, 4);
+            ctxShield.fillRect(18, 23, 3, 4);
 
-            // Roboter-Kern
+            // Körper (Rüstung)
             ctxShield.fillStyle = '#263238'; ctxShield.fillRect(9, 9, 14, 14);
             ctxShield.fillStyle = '#455a64'; ctxShield.fillRect(11, 11, 10, 10);
-            
-            // Sensoren / Augen
-            ctxShield.fillStyle = '#000000'; ctxShield.fillRect(12, 13, 3, 2); ctxShield.fillRect(17, 13, 3, 2);
-            ctxShield.fillStyle = '#00ffff'; ctxShield.fillRect(13, 13, 1, 1); ctxShield.fillRect(18, 13, 1, 1);
-            
-            // Energie-Zentrum
-            ctxShield.fillStyle = '#ffffff'; ctxShield.fillRect(14, 17, 4, 3);
-            ctxShield.fillStyle = '#00bcd4'; ctxShield.fillRect(15, 18, 2, 1);
+
+            // Visier
+            ctxShield.fillStyle = '#000000'; ctxShield.fillRect(12, 13, 8, 3);
+            ctxShield.fillStyle = '#00ffff'; ctxShield.fillRect(13, 14, 6, 1);
+
+            // Energie-Schwert (rechts)
+            ctxShield.fillStyle = '#795548'; ctxShield.fillRect(24, 14, 2, 4); // Griff
+            ctxShield.fillStyle = '#00ffff'; ctxShield.fillRect(23, 4, 4, 10); // Klingen-Glow
+            ctxShield.fillStyle = '#ffffff'; ctxShield.fillRect(24, 5, 2, 8);  // Kern
+
+            // Ritterschild (links)
+            ctxShield.fillStyle = '#37474f'; 
+            ctxShield.fillRect(2, 10, 8, 10);
+            ctxShield.fillRect(4, 20, 4, 2);
+            ctxShield.fillRect(5, 22, 2, 2);
+
+            // Leuchtendes Schild-Kreuz
+            ctxShield.fillStyle = '#00ffff';
+            ctxShield.fillRect(5, 12, 2, 6);
+            ctxShield.fillRect(3, 14, 6, 2);
         }
         drawThreatIcons();
 
@@ -2269,47 +2273,45 @@
                 const isGolemRaging = (this.type === 'golem' && this.hp <= this.maxHp * 0.5);
 
                 if (this.type === 'shielded') {
-                    // Pulsierender Effekt basierend auf der Zeit
                     const time = Date.now() * 0.005;
-                    const pulse = 13 + Math.sin(time) * 1.5; 
-                    const alpha = 0.3 + Math.sin(time * 0.5) * 0.2; 
+                    const pulseAlpha = 0.5 + Math.sin(time) * 0.3;
 
-                    // Äußerer, leuchtender Energieschild
-                    ctx.shadowColor = '#00ffff';
-                    ctx.shadowBlur = 12;
-                    ctx.fillStyle = `rgba(0, 255, 255, ${alpha})`;
-                    ctx.fillRect(-pulse, -pulse, pulse * 2, pulse * 2);
-                    
-                    // Scharfer Rahmen um den Schild
-                    ctx.strokeStyle = `rgba(0, 255, 255, ${alpha + 0.4})`;
-                    ctx.lineWidth = 1.5;
-                    ctx.strokeRect(-pulse, -pulse, pulse * 2, pulse * 2);
-
-                    // Ecken des Schild-Projektors (weiß/cyan leuchtend)
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(-pulse - 1, -pulse - 1, 3, 3);
-                    ctx.fillRect(pulse - 2, -pulse - 1, 3, 3);
-                    ctx.fillRect(-pulse - 1, pulse - 2, 3, 3);
-                    ctx.fillRect(pulse - 2, pulse - 2, 3, 3);
-
-                    // Gepanzerter innerer Kern (Roboter)
+                    // Füße
                     ctx.shadowColor = 'transparent';
-                    ctx.fillStyle = '#263238'; ctx.fillRect(-9, -9, 18, 18);
-                    ctx.fillStyle = '#455a64'; ctx.fillRect(-7, -7, 14, 14);
-                    
-                    // Roboter-Augen / Sensoren
-                    ctx.fillStyle = '#000000'; 
-                    ctx.fillRect(-5, -5, 4, 3);
-                    ctx.fillRect(1, -5, 4, 3);
-                    ctx.fillStyle = '#00ffff'; 
-                    ctx.fillRect(-4, -4, 2, 1);
-                    ctx.fillRect(2, -4, 2, 1);
+                    ctx.fillStyle = '#111111';
+                    ctx.fillRect(-5, 7, 3, 4); // linker Fuß
+                    ctx.fillRect(2, 7, 3, 4);  // rechter Fuß
 
-                    // Energiekern in der Mitte
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fillRect(-2, 2, 4, 3);
-                    ctx.fillStyle = '#00bcd4';
-                    ctx.fillRect(-1, 3, 2, 1);
+                    // Körper (Rüstung)
+                    ctx.fillStyle = '#263238'; ctx.fillRect(-7, -7, 14, 14);
+                    ctx.fillStyle = '#455a64'; ctx.fillRect(-5, -5, 10, 10);
+                    
+                    // Visier (Cyber-Knight Look)
+                    ctx.fillStyle = '#000000'; ctx.fillRect(-4, -3, 8, 3);
+                    ctx.fillStyle = '#00ffff'; ctx.fillRect(-3, -2, 6, 1);
+
+                    // Rechter Arm & Energie-Schwert
+                    ctx.fillStyle = '#263238'; ctx.fillRect(5, -2, 5, 4); // Arm
+                    ctx.fillStyle = '#795548'; ctx.fillRect(9, -2, 2, 4); // Schwertgriff
+                    ctx.shadowColor = '#00ffff'; ctx.shadowBlur = 8;
+                    ctx.fillStyle = `rgba(0, 255, 255, ${pulseAlpha})`; ctx.fillRect(8, -14, 4, 12); // Klingen-Glow
+                    ctx.fillStyle = '#ffffff'; ctx.fillRect(9, -14, 2, 12); // Klingen-Kern
+                    ctx.shadowColor = 'transparent';
+
+                    // Linker Arm & Ritterschild
+                    ctx.fillStyle = '#263238'; ctx.fillRect(-10, -2, 5, 4); // Arm
+                    ctx.fillStyle = '#37474f'; 
+                    ctx.fillRect(-14, -6, 8, 10); // Schild oben
+                    ctx.fillRect(-12, 4, 4, 2);   // Schild Mitte (Spitze zulaufend)
+                    ctx.fillRect(-11, 6, 2, 2);   // Schild Spitze unten
+                    
+                    // Leuchtendes Kreuz auf dem Ritterschild
+                    ctx.shadowColor = '#00ffff'; ctx.shadowBlur = 5;
+                    const crossAlpha = Math.min(1, pulseAlpha + 0.2);
+                    ctx.fillStyle = `rgba(0, 255, 255, ${crossAlpha})`;
+                    ctx.fillRect(-11, -4, 2, 6); // Vertikal
+                    ctx.fillRect(-13, -2, 6, 2); // Horizontal
+                    ctx.shadowColor = 'transparent';
                 } else if (this.type === 'pig') {
                     ctx.shadowColor = 'transparent';
                     ctx.fillStyle = '#D81B60'; 
