@@ -47,21 +47,23 @@
         }
 
         .logo-container {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 15px;
-            border-radius: 50%;
+            width: 100%;
+            max-width: 480px;
+            height: auto;
+            margin-bottom: 5px;
+            border-radius: 0;
             overflow: hidden;
-            border: 2px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
-            background-color: #111;
+            border: none;
+            /* box-shadow hier komplett entfernt, um den eckigen Schleier zu löschen */
+            background-color: transparent;
         }
 
         .logo-container img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
             display: block;
+            /* Neuer Schatten, der sich genau der Kontur des transparenten Logos anpasst */
+            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.5));
         }
 
         .presents {
@@ -555,11 +557,8 @@
     <div id="startScreen">
         <div class="header-section">
             <div class="logo-container">
-                <img src="logo original OH.png" alt="Mine-c Logo">
+                <img src="mine-c logo OH.png" alt="Mine-c Logo">
             </div>
-            <div class="presents">PAULGHG0306 PRESENTS</div>
-            <h1 class="game-title">Mine-c</h1>
-            <div class="game-subtitle">Defend the legendary Portal.</div>
         </div>
 
         <!-- AUTH / LOGIN SECTION -->
